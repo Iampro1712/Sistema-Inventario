@@ -249,27 +249,29 @@ export function AlertsTableReal({ refreshTrigger, typeFilter, searchTerm, onMark
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {/* Header de selección */}
+          {/* Header de selección responsive */}
           {unreadAlerts.length > 0 && (
             <div className="flex items-center gap-2 pb-2 border-b">
               <Checkbox
                 checked={selectedAlerts.length === unreadAlerts.length && unreadAlerts.length > 0}
                 onCheckedChange={handleSelectAll}
+                className="touch-target"
               />
               <span className="text-sm text-muted-foreground">
-                Seleccionar todas las no leídas ({unreadAlerts.length})
+                <span className="hidden sm:inline">Seleccionar todas las no leídas ({unreadAlerts.length})</span>
+                <span className="sm:hidden">Seleccionar todas ({unreadAlerts.length})</span>
               </span>
             </div>
           )}
 
-          {/* Lista de alertas */}
+          {/* Lista de alertas responsive */}
           <div className="space-y-3">
             {alerts.map((alert) => (
-              <div 
-                key={alert.id} 
-                className={`p-4 border rounded-lg transition-all ${
-                  alert.status === 'UNREAD' 
-                    ? 'bg-muted/30 border-primary/20' 
+              <div
+                key={alert.id}
+                className={`p-3 sm:p-4 border rounded-lg transition-all ${
+                  alert.status === 'UNREAD'
+                    ? 'bg-muted/30 border-primary/20'
                     : 'bg-background border-muted'
                 }`}
               >
@@ -278,15 +280,16 @@ export function AlertsTableReal({ refreshTrigger, typeFilter, searchTerm, onMark
                     <Checkbox
                       checked={selectedAlerts.includes(alert.id)}
                       onCheckedChange={() => handleSelectAlert(alert.id)}
+                      className="touch-target mt-1"
                     />
                   )}
-                  
+
                   <div className="flex-shrink-0 mt-1">
                     {getAlertIcon(alert.type)}
                   </div>
-                  
+
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
                       {getAlertBadge(alert.type)}
                       {alert.status === 'read' && (
                         <Badge variant="outline" className="text-xs">
@@ -294,35 +297,41 @@ export function AlertsTableReal({ refreshTrigger, typeFilter, searchTerm, onMark
                         </Badge>
                       )}
                     </div>
-                    
-                    <h4 className="font-medium text-sm mb-1">{alert.title}</h4>
-                    <p className="text-sm text-muted-foreground mb-2">{alert.message}</p>
-                    
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1">
+
+                    <h4 className="font-medium text-sm sm:text-base mb-1">{alert.title}</h4>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-3">{alert.message}</p>
+
+                    {/* Información responsive */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Calendar className="h-3 w-3" />
-                        {new Date(alert.createdAt).toLocaleString('es-ES')}
+                        <span className="hidden sm:inline">{new Date(alert.createdAt).toLocaleString('es-ES')}</span>
+                        <span className="sm:hidden">{new Date(alert.createdAt).toLocaleDateString('es-ES')}</span>
                       </div>
-                      
+
                       {alert.product && (
-                        <div className="flex items-center gap-1">
-                          <Package className="h-3 w-3" />
-                          <span>{alert.product.name}</span>
-                          <code className="bg-muted px-1 rounded text-xs">
-                            {alert.product.sku}
-                          </code>
-                          {alert.product.category && (
-                            <Badge 
-                              variant="outline"
-                              style={{ 
-                                borderColor: alert.product.category.color,
-                                color: alert.product.category.color 
-                              }}
-                              className="text-xs"
-                            >
-                              {alert.product.category.name}
-                            </Badge>
-                          )}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Package className="h-3 w-3" />
+                            <span className="font-medium">{alert.product.name}</span>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-1 ml-4 sm:ml-0">
+                            <code className="bg-muted px-1 rounded text-xs">
+                              {alert.product.sku}
+                            </code>
+                            {alert.product.category && (
+                              <Badge
+                                variant="outline"
+                                style={{
+                                  borderColor: alert.product.category.color,
+                                  color: alert.product.category.color
+                                }}
+                                className="text-xs"
+                              >
+                                {alert.product.category.name}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>

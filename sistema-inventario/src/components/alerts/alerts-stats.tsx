@@ -92,29 +92,29 @@ export function AlertsStats({ refreshTrigger, onFilterChange, activeFilter }: Al
     },
   ];
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
       {alertStats.map((stat) => {
         const isActive = activeFilter === stat.type;
 
         return (
           <Card
             key={stat.name}
-            className={`animate-fade-in cursor-pointer transition-all duration-200 hover:shadow-md ${
+            className={`animate-fade-in cursor-pointer transition-all duration-200 hover:shadow-md touch-target ${
               isActive ? 'ring-2 ring-primary shadow-md' : 'hover:shadow-lg'
             }`}
             onClick={() => handleCardClick(stat.type)}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
                 {stat.name}
               </CardTitle>
-              <div className={`h-8 w-8 rounded-lg ${stat.bgColor} flex items-center justify-center`}>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+              <div className={`h-6 w-6 sm:h-8 sm:w-8 rounded-lg ${stat.bgColor} flex items-center justify-center`}>
+                <stat.icon className={`h-3 w-3 sm:h-4 sm:w-4 ${stat.color}`} />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">
+            <CardContent className="pt-0">
+              <div className="text-xl sm:text-2xl font-bold">{stat.value}</div>
+              <p className="text-xs text-muted-foreground line-clamp-2">
                 {stat.description}
               </p>
               {isActive && (

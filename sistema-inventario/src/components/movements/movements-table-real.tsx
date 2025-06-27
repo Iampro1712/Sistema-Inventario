@@ -194,7 +194,8 @@ export function MovementsTableReal({ refreshTrigger, filters, searchTerm }: Move
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        {/* Vista de tabla para desktop */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b">
@@ -234,11 +235,11 @@ export function MovementsTableReal({ refreshTrigger, filters, searchTerm }: Move
                           {movement.product.sku}
                         </code>
                         {movement.product.category && (
-                          <Badge 
+                          <Badge
                             variant="outline"
-                            style={{ 
+                            style={{
                               borderColor: movement.product.category.color,
-                              color: movement.product.category.color 
+                              color: movement.product.category.color
                             }}
                             className="text-xs"
                           >
@@ -280,25 +281,117 @@ export function MovementsTableReal({ refreshTrigger, filters, searchTerm }: Move
             </tbody>
           </table>
         </div>
-        
-        {/* Paginación */}
-        <div className="flex items-center justify-between mt-6">
-          <p className="text-sm text-muted-foreground">
+
+        {/* Vista de cards para móvil y tablet */}
+        <div className="lg:hidden space-y-4">
+          {movements.map((movement) => (
+            <Card key={movement.id} className="border border-border">
+              <CardContent className="p-4">
+                <div className="space-y-3">
+                  {/* Header del movimiento */}
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-2">
+                      {getMovementTypeIcon(movement.type)}
+                      {getMovementTypeBadge(movement.type)}
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium">
+                        {new Date(movement.createdAt).toLocaleDateString('es-ES')}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(movement.createdAt).toLocaleTimeString('es-ES')}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Información del producto */}
+                  <div>
+                    <h3 className="font-medium text-base">{movement.product.name}</h3>
+                    <div className="flex flex-wrap items-center gap-2 mt-1">
+                      <code className="text-xs bg-muted px-1 rounded">
+                        {movement.product.sku}
+                      </code>
+                      {movement.product.category && (
+                        <Badge
+                          variant="outline"
+                          style={{
+                            borderColor: movement.product.category.color,
+                            color: movement.product.category.color
+                          }}
+                          className="text-xs"
+                        >
+                          {movement.product.category.name}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Detalles del movimiento */}
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Cantidad:</span>
+                      <p className={`font-mono font-medium ${
+                        movement.type === 'IN' ? 'text-green-600' :
+                        movement.type === 'OUT' ? 'text-red-600' :
+                        'text-blue-600'
+                      }`}>
+                        {formatQuantity(movement.type, movement.quantity)}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Usuario:</span>
+                      <p className="font-medium">{movement.createdBy || 'Sistema'}</p>
+                    </div>
+                    <div className="col-span-2">
+                      <span className="text-muted-foreground">Razón:</span>
+                      <p className="mt-1">{movement.reason}</p>
+                      {movement.notes && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {movement.notes}
+                        </p>
+                      )}
+                    </div>
+                    {movement.reference && (
+                      <div className="col-span-2">
+                        <span className="text-muted-foreground">Referencia:</span>
+                        <p className="mt-1">{movement.reference}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Paginación responsive */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 pt-4 border-t">
+          <p className="text-sm text-muted-foreground text-center sm:text-left">
             Mostrando {((pagination.page - 1) * pagination.limit) + 1} - {Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total} movimientos
           </p>
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
+          <div className="flex items-center justify-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={!pagination.hasPrevPage}
+              className="hidden sm:flex"
             >
               <ChevronLeft className="h-4 w-4" />
               Anterior
             </Button>
-            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={!pagination.hasPrevPage}
+              className="sm:hidden w-8 h-8 p-0"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+
             <div className="flex items-center gap-1">
-              {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+              {Array.from({ length: Math.min(3, pagination.totalPages) }, (_, i) => {
                 const pageNum = i + 1;
                 return (
                   <Button
@@ -306,21 +399,31 @@ export function MovementsTableReal({ refreshTrigger, filters, searchTerm }: Move
                     variant={pagination.page === pageNum ? "default" : "outline"}
                     size="sm"
                     onClick={() => handlePageChange(pageNum)}
-                    className="w-8 h-8 p-0"
+                    className="w-8 h-8 p-0 touch-target"
                   >
                     {pageNum}
                   </Button>
                 );
               })}
             </div>
-            
-            <Button 
-              variant="outline" 
-              size="sm" 
+
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={!pagination.hasNextPage}
+              className="hidden sm:flex"
             >
               Siguiente
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={!pagination.hasNextPage}
+              className="sm:hidden w-8 h-8 p-0"
+            >
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
