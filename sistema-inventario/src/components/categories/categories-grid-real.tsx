@@ -136,7 +136,7 @@ export function CategoriesGridReal({ refreshTrigger, searchTerm }: CategoriesGri
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {filteredCategories.map((category) => (
         <Card key={category.id} className="animate-fade-in hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
@@ -156,6 +156,7 @@ export function CategoriesGridReal({ refreshTrigger, searchTerm }: CategoriesGri
                   size="sm"
                   onClick={() => handleDelete(category.id)}
                   title="Eliminar categoría"
+                  className="touch-target"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -165,26 +166,27 @@ export function CategoriesGridReal({ refreshTrigger, searchTerm }: CategoriesGri
           <CardContent className="pt-0">
             <div className="space-y-3">
               <div>
-                <h3 className="font-semibold text-lg">{category.name}</h3>
+                <h3 className="font-semibold text-base sm:text-lg">{category.name}</h3>
                 {category.description && (
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                     {category.description}
                   </p>
                 )}
               </div>
               
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <Package className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">
                     {category._count.products} productos
                   </span>
                 </div>
-                <Badge 
+                <Badge
                   variant="outline"
-                  style={{ 
+                  className="self-start sm:self-auto text-xs"
+                  style={{
                     borderColor: category.color,
-                    color: category.color 
+                    color: category.color
                   }}
                 >
                   {category.name}

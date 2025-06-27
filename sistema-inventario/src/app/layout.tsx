@@ -12,11 +12,6 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Sistema de Inventario",
   description: "Sistema completo de gestión de inventario con control de stock y alertas automáticas",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f172a" }
-  ],
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -25,6 +20,17 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false
   }
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f172a" }
+  ]
 };
 
 export default function RootLayout({

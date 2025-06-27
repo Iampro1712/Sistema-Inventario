@@ -88,9 +88,10 @@ export function CategoryFormModal({ onCategoryCreated }: CategoryFormModalProps)
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus className="h-4 w-4 mr-2" />
-          Crear Categoría
+        <Button size="sm" className="w-full sm:w-auto">
+          <Plus className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Crear Categoría</span>
+          <span className="sm:hidden">Crear</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">

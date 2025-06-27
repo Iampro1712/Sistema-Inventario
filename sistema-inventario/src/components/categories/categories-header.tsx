@@ -32,51 +32,62 @@ export function CategoriesHeader({
   };
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      {/* Header responsive */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Categorías</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Categorías</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Organiza tus productos por categorías
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <CategoryImportModal onImportCompleted={onCategoryCreated} />
-          <CategoryExportModal />
-          <CategoryFormModal onCategoryCreated={onCategoryCreated} />
+        {/* Botones de acción - responsive */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+          <div className="grid grid-cols-3 sm:flex gap-2">
+            <CategoryImportModal onImportCompleted={onCategoryCreated} />
+            <CategoryExportModal />
+            <CategoryFormModal onCategoryCreated={onCategoryCreated} />
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4 flex-1">
+      {/* Búsqueda, vista y contador - responsive */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 flex-1">
           <Input
             placeholder="Buscar categorías..."
             value={searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="max-w-sm"
+            className="w-full sm:max-w-sm"
           />
-          <div className="flex items-center gap-1 border rounded-md">
+          {/* Selector de vista - responsive */}
+          <div className="flex items-center gap-1 border rounded-md w-full sm:w-auto">
             <Button
               variant={viewMode === 'grid' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => onViewModeChange?.('grid')}
-              className="rounded-r-none"
+              className="rounded-r-none flex-1 sm:flex-none"
             >
-              <Grid className="h-4 w-4" />
+              <Grid className="h-4 w-4 sm:mr-0" />
+              <span className="ml-2 sm:hidden">Grid</span>
             </Button>
             <Button
               variant={viewMode === 'list' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => onViewModeChange?.('list')}
-              className="rounded-l-none"
+              className="rounded-l-none flex-1 sm:flex-none"
             >
-              <List className="h-4 w-4" />
+              <List className="h-4 w-4 sm:mr-0" />
+              <span className="ml-2 sm:hidden">Lista</span>
             </Button>
           </div>
         </div>
 
-        <Badge variant="secondary">
-          {totalCategories} {totalCategories === 1 ? 'categoría' : 'categorías'}
-        </Badge>
+        {/* Badge contador - responsive */}
+        <div className="flex justify-center sm:justify-end">
+          <Badge variant="secondary" className="text-sm">
+            {totalCategories} {totalCategories === 1 ? 'categoría' : 'categorías'}
+          </Badge>
+        </div>
       </div>
     </div>
   );

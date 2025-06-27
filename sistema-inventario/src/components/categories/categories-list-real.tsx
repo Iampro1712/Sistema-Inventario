@@ -144,7 +144,8 @@ export function CategoriesListReal({ refreshTrigger, searchTerm }: CategoriesLis
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        {/* Vista de tabla para desktop */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b">
@@ -161,17 +162,17 @@ export function CategoriesListReal({ refreshTrigger, searchTerm }: CategoriesLis
                 <tr key={category.id} className="border-b hover:bg-muted/50 transition-colors">
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                      <div 
+                      <div
                         className="w-4 h-4 rounded-full border"
                         style={{ backgroundColor: category.color }}
                       />
                       <div>
                         <p className="font-medium">{category.name}</p>
-                        <Badge 
+                        <Badge
                           variant="outline"
-                          style={{ 
+                          style={{
                             borderColor: category.color,
-                            color: category.color 
+                            color: category.color
                           }}
                           className="text-xs"
                         >
@@ -187,7 +188,7 @@ export function CategoriesListReal({ refreshTrigger, searchTerm }: CategoriesLis
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
-                      <div 
+                      <div
                         className="w-6 h-6 rounded border shadow-sm"
                         style={{ backgroundColor: category.color }}
                       />
@@ -209,7 +210,7 @@ export function CategoriesListReal({ refreshTrigger, searchTerm }: CategoriesLis
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm">
-                        {category.createdAt 
+                        {category.createdAt
                           ? new Date(category.createdAt).toLocaleDateString('es-ES')
                           : 'N/A'
                         }
@@ -219,15 +220,16 @@ export function CategoriesListReal({ refreshTrigger, searchTerm }: CategoriesLis
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-1">
                       <CategoryDetailsModal category={category} />
-                      <CategoryEditModal 
-                        category={category} 
+                      <CategoryEditModal
+                        category={category}
                         onCategoryUpdated={fetchCategories}
                       />
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(category.id)}
                         title="Eliminar categoría"
+                        className="touch-target"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -238,13 +240,110 @@ export function CategoriesListReal({ refreshTrigger, searchTerm }: CategoriesLis
             </tbody>
           </table>
         </div>
-        
-        {/* Información adicional */}
-        <div className="flex items-center justify-between mt-6 pt-4 border-t">
-          <p className="text-sm text-muted-foreground">
+
+        {/* Vista de cards para móvil y tablet */}
+        <div className="lg:hidden space-y-4">
+          {filteredCategories.map((category) => (
+            <Card key={category.id} className="border border-border">
+              <CardContent className="p-4">
+                <div className="space-y-3">
+                  {/* Header de la categoría */}
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div
+                        className="w-6 h-6 rounded-full border shadow-sm shrink-0"
+                        style={{ backgroundColor: category.color }}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-medium text-base truncate">{category.name}</h3>
+                        <Badge
+                          variant="outline"
+                          style={{
+                            borderColor: category.color,
+                            color: category.color
+                          }}
+                          className="text-xs mt-1"
+                        >
+                          {category.name}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Información de la categoría */}
+                  <div className="grid grid-cols-1 gap-3 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Descripción:</span>
+                      <p className="mt-1 text-sm">
+                        {category.description || 'Sin descripción'}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <span className="text-muted-foreground">Color:</span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div
+                            className="w-4 h-4 rounded border"
+                            style={{ backgroundColor: category.color }}
+                          />
+                          <code className="text-xs bg-muted px-1 py-0.5 rounded">
+                            {category.color}
+                          </code>
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Productos:</span>
+                        <div className="flex items-center gap-1 mt-1">
+                          <Package className="h-3 w-3 text-muted-foreground" />
+                          <span className="font-medium">{category._count.products}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="text-muted-foreground">Fecha de creación:</span>
+                      <div className="flex items-center gap-1 mt-1">
+                        <Calendar className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-sm">
+                          {category.createdAt
+                            ? new Date(category.createdAt).toLocaleDateString('es-ES')
+                            : 'N/A'
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Acciones */}
+                  <div className="flex items-center justify-end gap-1 pt-2 border-t">
+                    <CategoryDetailsModal category={category} />
+                    <CategoryEditModal
+                      category={category}
+                      onCategoryUpdated={fetchCategories}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(category.id)}
+                      title="Eliminar categoría"
+                      className="touch-target"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Información adicional responsive */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 pt-4 border-t">
+          <p className="text-sm text-muted-foreground text-center sm:text-left">
             Mostrando {filteredCategories.length} categorías{categories.length !== filteredCategories.length ? ` de ${categories.length} total` : ''}
           </p>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center justify-center sm:justify-end gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Package className="h-4 w-4" />
               <span>

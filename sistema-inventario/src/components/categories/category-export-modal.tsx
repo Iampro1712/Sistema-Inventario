@@ -75,9 +75,9 @@ export function CategoryExportModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          <Download className="h-4 w-4 mr-2" />
-          Exportar
+        <Button variant="outline" size="sm" className="w-full sm:w-auto">
+          <Download className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Exportar</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[400px]">
