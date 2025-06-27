@@ -1,0 +1,168 @@
+/* Mejoras de responsividad para móviles */
+
+/* Asegurar que los botones sean tocables en móvil */
+@media (max-width: 768px) {
+  .btn-mobile {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Mejorar el espaciado en móvil */
+  .mobile-spacing {
+    padding: 0.75rem;
+  }
+  
+  /* Hacer que las tablas sean scrolleables horizontalmente */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Mejorar el tamaño de texto en móvil */
+  .text-mobile {
+    font-size: 16px; /* Evita zoom en iOS */
+  }
+  
+  /* Asegurar que los modales sean responsive */
+  .modal-mobile {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+  
+  /* Mejorar el espaciado de cards en móvil */
+  .card-mobile {
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+  }
+  
+  /* Hacer que los inputs sean más grandes en móvil */
+  .input-mobile {
+    min-height: 44px;
+    font-size: 16px;
+  }
+  
+  /* Mejorar la navegación en móvil */
+  .nav-mobile {
+    padding: 1rem 0.75rem;
+  }
+  
+  /* Asegurar que los dropdowns sean accesibles */
+  .dropdown-mobile {
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+}
+
+/* Mejoras para tablets */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .tablet-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .tablet-spacing {
+    padding: 1rem;
+  }
+}
+
+/* Utilidades de responsividad */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.scrollable-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scrollable-y {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mejorar la accesibilidad táctil */
+.tap-highlight-none {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Asegurar que el contenido no se corte en pantallas pequeñas */
+.safe-area {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Mejorar la legibilidad en pantallas pequeñas */
+.text-readable {
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+
+/* Asegurar que los elementos interactivos sean accesibles */
+.interactive-element {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Mejorar el rendimiento en móviles */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Ocultar elementos en móvil cuando sea necesario */
+.hidden-mobile {
+  @media (max-width: 768px) {
+    display: none !important;
+  }
+}
+
+/* Mostrar solo en móvil */
+.mobile-only {
+  @media (min-width: 769px) {
+    display: none !important;
+  }
+}
+
+/* Clases de utilidad para breakpoints */
+.sm-hidden {
+  @media (max-width: 640px) {
+    display: none !important;
+  }
+}
+
+.md-hidden {
+  @media (max-width: 768px) {
+    display: none !important;
+  }
+}
+
+.lg-hidden {
+  @media (max-width: 1024px) {
+    display: none !important;
+  }
+}
+
+/* Mejorar el contraste en pantallas pequeñas */
+@media (max-width: 768px) {
+  .text-muted-foreground {
+    opacity: 0.8;
+  }
+  
+  .border {
+    border-width: 1px;
+  }
+}
+
+/* Asegurar que los elementos flotantes no interfieran en móvil */
+.mobile-stack {
+  @media (max-width: 768px) {
+    position: static !important;
+    transform: none !important;
+  }
+}

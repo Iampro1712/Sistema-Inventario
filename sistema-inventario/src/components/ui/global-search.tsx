@@ -64,7 +64,7 @@ export function GlobalSearch() {
         onChange={(e) => handleSearch(e.target.value)}
         onFocus={() => setIsOpen(true)}
         className="block h-full w-full border-0 py-0 pl-10 pr-0 text-foreground placeholder:text-muted-foreground focus:ring-0 sm:text-sm bg-transparent"
-        placeholder="Buscar productos, categorías..."
+        placeholder="Buscar pro..."
         type="search"
         name="search"
       />

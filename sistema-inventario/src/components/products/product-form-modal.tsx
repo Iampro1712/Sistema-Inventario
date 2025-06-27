@@ -114,9 +114,10 @@ export function ProductFormModal({ onProductCreated }: ProductFormModalProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus className="h-4 w-4 mr-2" />
-          Nuevo Producto
+        <Button size="sm" className="w-full sm:w-auto">
+          <Plus className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Nuevo Producto</span>
+          <span className="sm:hidden">Nuevo</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">

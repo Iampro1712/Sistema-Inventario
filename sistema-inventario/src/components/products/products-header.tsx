@@ -46,32 +46,39 @@ export function ProductsHeader({ onProductCreated, onFiltersChange, onSearchChan
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      {/* Header responsive */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Productos</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Productos</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Gestiona tu inventario de productos
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <ImportModal onImportCompleted={onProductCreated} />
-          <ExportModal />
-          <ProductFormModal onProductCreated={onProductCreated} />
+        {/* Botones de acción - responsive */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+          <div className="grid grid-cols-3 sm:flex gap-2">
+            <ImportModal onImportCompleted={onProductCreated} />
+            <ExportModal />
+            <ProductFormModal onProductCreated={onProductCreated} />
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4 flex-1">
+      {/* Búsqueda y filtros - responsive */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 flex-1">
           <Input
             placeholder="Buscar productos..."
             value={searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="max-w-sm"
+            className="w-full sm:max-w-sm"
           />
-          <FiltersModal
-            onFiltersChange={handleFiltersChange}
-            activeFilters={filters}
-          />
+          <div className="w-full sm:w-auto">
+            <FiltersModal
+              onFiltersChange={handleFiltersChange}
+              activeFilters={filters}
+            />
+          </div>
         </div>
       </div>
     </div>

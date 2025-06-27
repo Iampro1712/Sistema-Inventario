@@ -217,7 +217,8 @@ export function ProductsTableReal({ refreshTrigger, filters, searchTerm }: Produ
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        {/* Vista de tabla para desktop */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b">
@@ -233,7 +234,7 @@ export function ProductsTableReal({ refreshTrigger, filters, searchTerm }: Produ
             <tbody>
               {filteredProducts.map((product) => {
                 const stockStatus = getStockStatus(product.stock, product.minStock);
-                
+
                 return (
                   <tr key={product.id} className="border-b hover:bg-muted/50 transition-colors">
                     <td className="py-3 px-4">
@@ -253,11 +254,11 @@ export function ProductsTableReal({ refreshTrigger, filters, searchTerm }: Produ
                     </td>
                     <td className="py-3 px-4">
                       {product.category ? (
-                        <Badge 
+                        <Badge
                           variant="outline"
-                          style={{ 
+                          style={{
                             borderColor: product.category.color,
-                            color: product.category.color 
+                            color: product.category.color
                           }}
                         >
                           {product.category.name}
@@ -319,21 +320,126 @@ export function ProductsTableReal({ refreshTrigger, filters, searchTerm }: Produ
             </tbody>
           </table>
         </div>
-        
-        {/* Paginación */}
-        <div className="flex items-center justify-between mt-6">
-          <p className="text-sm text-muted-foreground">
+
+        {/* Vista de cards para móvil y tablet */}
+        <div className="lg:hidden space-y-4">
+          {filteredProducts.map((product) => {
+            const stockStatus = getStockStatus(product.stock, product.minStock);
+
+            return (
+              <Card key={product.id} className="border border-border">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    {/* Header del producto */}
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-base truncate">{product.name}</h3>
+                        {product.description && (
+                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                            {product.description}
+                          </p>
+                        )}
+                      </div>
+                      <Badge variant={stockStatus.variant} className="ml-2 shrink-0">
+                        {stockStatus.text}
+                      </Badge>
+                    </div>
+
+                    {/* Información del producto */}
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <span className="text-muted-foreground">SKU:</span>
+                        <code className="ml-1 bg-muted px-1 py-0.5 rounded text-xs">
+                          {product.sku}
+                        </code>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Categoría:</span>
+                        <div className="mt-1">
+                          {product.category ? (
+                            <Badge
+                              variant="outline"
+                              className="text-xs"
+                              style={{
+                                borderColor: product.category.color,
+                                color: product.category.color
+                              }}
+                            >
+                              {product.category.name}
+                            </Badge>
+                          ) : (
+                            <span className="text-muted-foreground text-xs">Sin categoría</span>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Precio:</span>
+                        <p className="font-medium">${product.price.toFixed(2)}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Costo: ${product.cost.toFixed(2)}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Stock:</span>
+                        <p className="font-medium">{product.stock} unidades</p>
+                        <p className="text-xs text-muted-foreground">
+                          Mín: {product.minStock}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Acciones */}
+                    <div className="flex items-center justify-end gap-1 pt-2 border-t">
+                      <ProductDetailsModal product={product} />
+                      <ProductEditModal
+                        product={product}
+                        onProductUpdated={fetchProducts}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(product.id)}
+                        disabled={deletingProducts.has(product.id)}
+                        title={deletingProducts.has(product.id) ? "Eliminando..." : "Eliminar producto"}
+                        className={deletingProducts.has(product.id) ? "opacity-50 cursor-not-allowed" : ""}
+                      >
+                        {deletingProducts.has(product.id) ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button variant="ghost" size="sm" title="Más opciones">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Paginación responsive */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 pt-4 border-t">
+          <p className="text-sm text-muted-foreground text-center sm:text-left">
             Mostrando {filteredProducts.length} productos{products.length !== filteredProducts.length ? ` de ${products.length} total` : ''}
           </p>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" disabled>
+          <div className="flex items-center justify-center gap-2">
+            <Button variant="outline" size="sm" disabled className="hidden sm:inline-flex">
               Anterior
+            </Button>
+            <Button variant="outline" size="sm" disabled className="sm:hidden">
+              ←
             </Button>
             <Button variant="outline" size="sm">
               1
             </Button>
-            <Button variant="outline" size="sm" disabled>
+            <Button variant="outline" size="sm" disabled className="hidden sm:inline-flex">
               Siguiente
+            </Button>
+            <Button variant="outline" size="sm" disabled className="sm:hidden">
+              →
             </Button>
           </div>
         </div>

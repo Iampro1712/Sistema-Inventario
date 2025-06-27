@@ -110,9 +110,9 @@ export function ImportModal({ onImportCompleted }: ImportModalProps) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          <Upload className="h-4 w-4 mr-2" />
-          Importar
+        <Button variant="outline" size="sm" className="w-full sm:w-auto">
+          <Upload className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Importar</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
