@@ -1,0 +1,308 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Tema Azul Elegante - Modo Claro */
+    --background: 220 25% 97%;
+    --foreground: 220 15% 15%;
+    --card: 220 20% 98%;
+    --card-foreground: 220 15% 20%;
+    --popover: 220 20% 98%;
+    --popover-foreground: 220 15% 20%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 220 20% 98%;
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 220 15% 25%;
+    --muted: 220 15% 94%;
+    --muted-foreground: 220 10% 45%;
+    --accent: 217 91% 95%;
+    --accent-foreground: 217 91% 25%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 220 20% 98%;
+    --border: 220 15% 88%;
+    --input: 220 15% 90%;
+    --ring: 217 91% 60%;
+    --radius: 0.75rem;
+    --chart-1: 217 91% 60%;
+    --chart-2: 142 76% 36%;
+    --chart-3: 47 96% 53%;
+    --chart-4: 280 100% 70%;
+    --chart-5: 340 82% 52%;
+  }
+
+  .dark {
+    /* Tema Azul Elegante - Modo Oscuro con Degradado */
+    --background: 220 30% 8%;
+    --foreground: 220 15% 95%;
+    --card: 220 25% 12%;
+    --card-foreground: 220 15% 92%;
+    --popover: 220 25% 12%;
+    --popover-foreground: 220 15% 92%;
+    --primary: 217 91% 65%;
+    --primary-foreground: 220 30% 8%;
+    --secondary: 220 20% 18%;
+    --secondary-foreground: 220 15% 88%;
+    --muted: 220 20% 16%;
+    --muted-foreground: 220 10% 65%;
+    --accent: 217 91% 20%;
+    --accent-foreground: 217 91% 85%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 220 15% 95%;
+    --border: 220 20% 22%;
+    --input: 220 20% 18%;
+    --ring: 217 91% 65%;
+    --chart-1: 217 91% 65%;
+    --chart-2: 142 69% 58%;
+    --chart-3: 47 96% 64%;
+    --chart-4: 280 100% 80%;
+    --chart-5: 340 82% 67%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply text-foreground;
+    background: linear-gradient(135deg,
+      hsl(var(--background)) 0%,
+      hsl(220, 35%, 12%) 50%,
+      hsl(217, 40%, 15%) 100%);
+    min-height: 100vh;
+    background-attachment: fixed;
+  }
+
+  /* Fondo especial para modo claro */
+  :root body {
+    background: linear-gradient(135deg,
+      hsl(220, 25%, 97%) 0%,
+      hsl(217, 30%, 92%) 50%,
+      hsl(220, 35%, 88%) 100%);
+  }
+
+  /* Fondo especial para modo oscuro */
+  .dark body {
+    background: linear-gradient(135deg,
+      hsl(220, 30%, 8%) 0%,
+      hsl(217, 35%, 12%) 30%,
+      hsl(220, 40%, 15%) 70%,
+      hsl(217, 45%, 18%) 100%);
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  /* Animaciones personalizadas */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes pulse-soft {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes glow {
+    0%, 100% {
+      box-shadow: 0 0 5px hsl(var(--primary) / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.6), 0 0 30px hsl(var(--primary) / 0.4);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 2s infinite;
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s linear infinite;
+  }
+
+  /* Efectos Glassmorphism */
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .dark .glass-effect {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Sidebar especial con efectos */
+  .sidebar-gradient {
+    background: linear-gradient(180deg,
+      hsl(var(--card)) 0%,
+      hsl(var(--card) / 0.95) 50%,
+      hsl(var(--card) / 0.9) 100%);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  .dark .sidebar-gradient {
+    background: linear-gradient(180deg,
+      hsl(220, 25%, 12%) 0%,
+      hsl(217, 30%, 15%) 50%,
+      hsl(220, 35%, 18%) 100%);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid hsl(var(--primary) / 0.2);
+    box-shadow: 2px 0 20px hsl(var(--primary) / 0.1);
+  }
+
+  /* Botones de navegación con efectos especiales */
+  .nav-item {
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+
+  .nav-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+      transparent,
+      hsl(var(--primary) / 0.1),
+      transparent);
+    transition: left 0.5s;
+  }
+
+  .nav-item:hover::before {
+    left: 100%;
+  }
+
+  .nav-item:hover {
+    background: linear-gradient(135deg,
+      hsl(var(--primary) / 0.15) 0%,
+      hsl(var(--primary) / 0.1) 50%,
+      hsl(var(--primary) / 0.05) 100%);
+    transform: translateX(4px);
+    box-shadow: 0 4px 20px hsl(var(--primary) / 0.2);
+  }
+
+  .nav-item.active {
+    background: linear-gradient(135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--primary) / 0.9) 50%,
+      hsl(var(--primary) / 0.8) 100%);
+    color: hsl(var(--primary-foreground));
+    box-shadow: 0 4px 20px hsl(var(--primary) / 0.4);
+    transform: translateX(6px);
+  }
+
+  .nav-item.active::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 60%;
+    background: hsl(var(--primary-foreground));
+    border-radius: 2px;
+    box-shadow: 0 0 10px hsl(var(--primary-foreground) / 0.5);
+  }
+
+  /* Cards con efectos especiales */
+  .card-enhanced {
+    background: linear-gradient(135deg,
+      hsl(var(--card)) 0%,
+      hsl(var(--card) / 0.95) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: 0 8px 32px hsl(var(--foreground) / 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .card-enhanced:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px hsl(var(--foreground) / 0.15);
+    border-color: hsl(var(--primary) / 0.3);
+  }
+
+  .dark .card-enhanced {
+    background: linear-gradient(135deg,
+      hsl(var(--card)) 0%,
+      hsl(var(--card) / 0.9) 100%);
+    box-shadow: 0 8px 32px hsl(var(--background) / 0.3);
+  }
+
+  .dark .card-enhanced:hover {
+    box-shadow: 0 12px 40px hsl(var(--background) / 0.4);
+  }
+
+  /* Scrollbar personalizado */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted) / 0.3);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg,
+      hsl(var(--primary) / 0.6),
+      hsl(var(--primary) / 0.4));
+    border-radius: 4px;
+    border: 1px solid hsl(var(--primary) / 0.2);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg,
+      hsl(var(--primary) / 0.8),
+      hsl(var(--primary) / 0.6));
+  }
+}

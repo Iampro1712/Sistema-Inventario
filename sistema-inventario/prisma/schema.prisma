@@ -1,0 +1,290 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ma/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  color       String    @default("#3B82F6")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  sku         String   @unique
+  barcode     String?  @unique
+  price       Float
+  cost        Float    @default(0)
+  stock       Int      @default(0)
+  minStock    Int      @default(5)
+  maxStock    Int?
+  unit        String   @default("unidad")
+  location    String?
+  image       String?
+  isActive    Boolean  @default(true)
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  movements StockMovement[]
+  alerts    Alert[]
+
+  @@map("products")
+}
+
+model StockMovement {
+  id          String      @id @default(cuid())
+  type        MovementType
+  quantity    Int
+  reason      String?
+  reference   String?     // Número de factura, orden, etc.
+  notes       String?
+  productId   String
+  product     Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt   DateTime    @default(now())
+  createdBy   String?     // Usuario que realizó el movimiento
+
+  @@map("stock_movements")
+}
+
+model Alert {
+  id        String      @id @default(cuid())
+  type      AlertType
+  title     String
+  message   String
+  status    AlertStatus @default(UNREAD)
+  productId String?
+  product   Product?    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  metadata  Json?       // Datos adicionales en formato JSON
+  createdAt DateTime    @default(now())
+  readAt    DateTime?   // Fecha cuando se marcó como leída
+
+  @@map("alerts")
+}
+
+model User {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  name        String
+  role        UserRole  @default(VENDEDOR)
+  password    String?   // Hash de la contraseña
+  isActive    Boolean   @default(true)
+  phone       String?
+  department  String?
+  lastLogin   DateTime?
+  permissions Json?     // Almacenar permisos como JSON
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relaciones de notificaciones
+  notifications Notification[]
+  sentNotifications Notification[] @relation("NotificationSender")
+  notificationSettings NotificationSettings?
+
+  // Relación con API Keys
+  apiKeys ApiKey[]
+
+  @@map("users")
+}
+
+enum MovementType {
+  IN          // Entrada de stock
+  OUT         // Salida de stock
+  ADJUSTMENT  // Ajuste de inventario
+  TRANSFER    // Transferencia
+}
+
+enum AlertType {
+  CRITICAL      // Crítica (stock agotado, errores graves)
+  WARNING       // Advertencia (stock bajo, próximo a vencer)
+  INFO          // Informativa (notificaciones generales)
+  SUCCESS       // Éxito (operaciones completadas)
+}
+
+enum AlertStatus {
+  UNREAD        // No leída
+  READ          // Leída
+}
+
+enum UserRole {
+  CEO
+  ADMIN
+  MANAGER
+  VENDEDOR
+}
+
+// Modelo para notificaciones
+model Notification {
+  id          String            @id @default(cuid())
+  title       String
+  message     String
+  type        NotificationType  @default(INFO)
+  status      NotificationStatus @default(UNREAD)
+  priority    NotificationPriority @default(NORMAL)
+
+  // Datos adicionales como JSON
+  data        Json?
+
+  // Usuario destinatario
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Usuario que envió la notificación (opcional)
+  senderId    String?
+  sender      User?             @relation("NotificationSender", fields: [senderId], references: [id])
+
+  // Metadatos de entrega
+  emailSent   Boolean           @default(false)
+  emailSentAt DateTime?
+  readAt      DateTime?
+
+  // Timestamps
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@map("notifications")
+  @@index([userId, status])
+  @@index([createdAt])
+}
+
+// Configuración de notificaciones por usuario
+model NotificationSettings {
+  id                    String  @id @default(cuid())
+  userId                String  @unique
+  user                  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Configuraciones de email
+  emailEnabled          Boolean @default(true)
+  emailStockAlerts      Boolean @default(true)
+  emailMovements        Boolean @default(false)
+  emailUserActions      Boolean @default(true)
+  emailSystemUpdates    Boolean @default(true)
+
+  // Configuraciones de notificaciones en app
+  inAppEnabled          Boolean @default(true)
+  inAppStockAlerts      Boolean @default(true)
+  inAppMovements        Boolean @default(true)
+  inAppUserActions      Boolean @default(true)
+  inAppSystemUpdates    Boolean @default(true)
+
+  // Configuraciones de frecuencia
+  digestFrequency       DigestFrequency @default(IMMEDIATE)
+  quietHoursStart       Int?    // Hora de inicio (0-23)
+  quietHoursEnd         Int?    // Hora de fin (0-23)
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("notification_settings")
+}
+
+// Configuración SMTP del sistema
+model EmailConfig {
+  id          String    @id @default(cuid())
+  isActive    Boolean   @default(true)
+
+  // Configuración SMTP
+  smtpHost    String?
+  smtpPort    Int?      @default(587)
+  smtpUser    String?
+  smtpPass    String?
+  smtpSecure  Boolean   @default(false)
+
+  // Configuración de cuenta de prueba (Ethereal)
+  testAccount Json?     // Almacenar credenciales de cuenta de prueba
+  isTestMode  Boolean   @default(true)
+
+  // Configuración de remitente
+  fromName    String    @default("Sistema de Inventario")
+  fromEmail   String?
+
+  // Metadatos
+  lastTested  DateTime?
+  isVerified  Boolean   @default(false)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("email_config")
+}
+
+enum NotificationType {
+  STOCK_ALERT     // Alertas de stock bajo/agotado
+  MOVEMENT        // Movimientos de inventario
+  USER_ACTION     // Acciones de usuarios
+  SYSTEM_UPDATE   // Actualizaciones del sistema
+  SECURITY        // Alertas de seguridad
+  INFO            // Información general
+  SUCCESS         // Operaciones exitosas
+  WARNING         // Advertencias
+  ERROR           // Errores
+}
+
+enum NotificationStatus {
+  UNREAD
+  READ
+  ARCHIVED
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum DigestFrequency {
+  IMMEDIATE   // Inmediato
+  HOURLY      // Cada hora
+  DAILY       // Diario
+  WEEKLY      // Semanal
+  DISABLED    // Deshabilitado
+}
+
+model Settings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  category  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+// Modelo para API Keys
+model ApiKey {
+  id          String   @id @default(cuid())
+  name        String   // Nombre descriptivo de la API Key
+  key         String   @unique // La API Key en sí
+  permissions Json     // Array de permisos como JSON
+  isActive    Boolean  @default(true)
+  lastUsed    DateTime?
+  expiresAt   DateTime?
+
+  // Relación con el usuario que la creó
+  createdBy   String
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("api_keys")
+}
