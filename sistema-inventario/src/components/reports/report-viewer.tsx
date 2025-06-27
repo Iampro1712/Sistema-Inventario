@@ -76,20 +76,20 @@ export function ReportViewer({ data, onClose }: ReportViewerProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">{data.resumen.totalProductos}</div>
-                <div className="text-sm text-muted-foreground">Total Productos</div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="text-center p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <div className="text-xl sm:text-2xl font-bold text-blue-600">{data.resumen.totalProductos}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Total Productos</div>
               </div>
-              <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">
+              <div className="text-center p-3 sm:p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div className="text-xl sm:text-2xl font-bold text-green-600">
                   {formatCurrency(data.resumen.valorTotalInventario)}
                 </div>
-                <div className="text-sm text-muted-foreground">Valor Total</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Valor Total</div>
               </div>
-              <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                <div className="text-2xl font-bold text-red-600">{data.resumen.productosCriticos}</div>
-                <div className="text-sm text-muted-foreground">Productos Críticos</div>
+              <div className="text-center p-3 sm:p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                <div className="text-xl sm:text-2xl font-bold text-red-600">{data.resumen.productosCriticos}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Productos Críticos</div>
               </div>
             </div>
           </CardContent>
@@ -103,7 +103,8 @@ export function ReportViewer({ data, onClose }: ReportViewerProps) {
             <CardTitle>Detalle de Productos</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
+            {/* Vista de tabla para desktop */}
+            <div className="hidden lg:block overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
@@ -125,7 +126,7 @@ export function ReportViewer({ data, onClose }: ReportViewerProps) {
                       <td className="py-2 px-4">{formatCurrency(producto.precio)}</td>
                       <td className="py-2 px-4">
                         <Badge variant={
-                          producto.estado === 'Crítico' ? 'destructive' : 
+                          producto.estado === 'Crítico' ? 'destructive' :
                           producto.estado === 'Bajo' ? 'secondary' : 'default'
                         }>
                           {producto.estado}
@@ -135,6 +136,43 @@ export function ReportViewer({ data, onClose }: ReportViewerProps) {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Vista de cards para móvil */}
+            <div className="lg:hidden space-y-3 max-h-96 overflow-y-auto custom-scroll">
+              {data.productos.map((producto: any, index: number) => (
+                <div key={index} className="border rounded-lg p-3 bg-card">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-medium text-sm truncate flex-1">{producto.nombre}</h4>
+                      <Badge variant={
+                        producto.estado === 'Crítico' ? 'destructive' :
+                        producto.estado === 'Bajo' ? 'secondary' : 'default'
+                      } className="text-xs ml-2">
+                        {producto.estado}
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <span className="text-muted-foreground">SKU:</span>
+                        <p className="font-mono">{producto.sku}</p>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Categoría:</span>
+                        <p>{producto.categoria}</p>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Stock:</span>
+                        <p className="font-medium">{producto.stock}</p>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Precio:</span>
+                        <p className="font-medium">{formatCurrency(producto.precio)}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
@@ -519,32 +557,37 @@ export function ReportViewer({ data, onClose }: ReportViewerProps) {
   const ReportIcon = getReportIcon(data.tipo?.toLowerCase() || '');
 
   return (
-    <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
-      <div className="container mx-auto p-6 max-w-7xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6 pb-4 border-b">
-          <div className="flex items-center gap-3">
-            <ReportIcon className="h-8 w-8 text-primary" />
-            <div>
-              <h1 className="text-2xl font-bold">{data.titulo || data.tipoDisplay || 'Reporte'}</h1>
-              <p className="text-muted-foreground">
+    <div className="fixed inset-0 bg-background z-50 overflow-y-auto safe-area custom-scroll">
+      <div className="container mx-auto p-3 sm:p-6 max-w-7xl min-h-screen">
+        {/* Header responsive */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-4 border-b">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <ReportIcon className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg sm:text-2xl font-bold truncate">{data.titulo || data.tipoDisplay || 'Reporte'}</h1>
+              <p className="text-muted-foreground text-sm">
                 Generado el: {data.exportedAt ? formatDate(data.exportedAt) : 'Ahora'}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={handleDownload}>
-              <Download className="h-4 w-4 mr-2" />
-              Descargar JSON
+
+          {/* Botones responsive */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+            <Button variant="outline" onClick={handleDownload} className="w-full sm:w-auto touch-target">
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Descargar JSON</span>
+              <span className="sm:hidden">Descargar</span>
             </Button>
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} className="w-full sm:w-auto touch-target">
               Cerrar
             </Button>
           </div>
         </div>
 
-        {/* Content */}
-        {renderReportContent()}
+        {/* Content responsive */}
+        <div className="pb-6">
+          {renderReportContent()}
+        </div>
       </div>
     </div>
   );
