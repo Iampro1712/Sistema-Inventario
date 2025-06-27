@@ -12,8 +12,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   // Configuración específica para Netlify
-  trailingSlash: false,
-  distDir: '.next'
+  trailingSlash: false
 };
 
 export default nextConfig;
