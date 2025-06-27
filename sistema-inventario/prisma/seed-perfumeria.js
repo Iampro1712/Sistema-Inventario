@@ -1,17 +1,21 @@
-import { PrismaClient } from '@prisma/client';
-import { hashPassword } from '../src/lib/password';
+const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 
+async function hashPassword(password) {
+  return await bcrypt.hash(password, 12);
+}
+
 async function main() {
-  console.log('🌱 Seeding database...');
+  console.log('🌱 Seeding database con datos de perfumería...');
 
   // Crear usuarios iniciales
   const users = [
     {
       name: "Master Admin",
       email: "master@sistema.com",
-      role: "CEO" as const,
+      role: "CEO",
       isActive: true,
       phone: "+34 600 000 000",
       department: "Sistemas",
@@ -30,7 +34,7 @@ async function main() {
     {
       name: "Juan Pérez",
       email: "juan.perez@empresa.com",
-      role: "CEO" as const,
+      role: "CEO",
       isActive: true,
       phone: "+34 612 345 678",
       department: "Dirección General",
@@ -49,7 +53,7 @@ async function main() {
     {
       name: "María García",
       email: "maria.garcia@empresa.com",
-      role: "ADMIN" as const,
+      role: "ADMIN",
       isActive: true,
       phone: "+34 623 456 789",
       department: "Administración",
@@ -68,7 +72,7 @@ async function main() {
     {
       name: "Carlos López",
       email: "carlos.lopez@empresa.com",
-      role: "MANAGER" as const,
+      role: "MANAGER",
       isActive: true,
       phone: "+34 634 567 890",
       department: "Ventas",
@@ -87,7 +91,7 @@ async function main() {
     {
       name: "Ana Martínez",
       email: "ana.martinez@empresa.com",
-      role: "VENDEDOR" as const,
+      role: "VENDEDOR",
       isActive: false,
       phone: "+34 645 678 901",
       department: "Contabilidad",
@@ -106,7 +110,7 @@ async function main() {
     {
       name: "Luis Rodríguez",
       email: "luis.rodriguez@empresa.com",
-      role: "MANAGER" as const,
+      role: "MANAGER",
       isActive: true,
       phone: "+34 656 789 012",
       department: "Compras",
@@ -128,7 +132,7 @@ async function main() {
   for (const userData of users) {
     // Hashear contraseña por defecto
     const hashedPassword = await hashPassword('admin123');
-
+    
     const user = await prisma.user.upsert({
       where: { email: userData.email },
       update: {},
@@ -198,98 +202,11 @@ async function main() {
     }),
   ]);
 
-  // Crear productos de perfumería
-  const productos = await Promise.all([
-    prisma.product.upsert({
-      where: { sku: 'DIOR-001' },
-      update: {},
-      create: {
-        name: 'Dior Sauvage EDT 100ml',
-        description: 'Fragancia masculina fresca y especiada con bergamota y pimienta',
-        sku: 'DIOR-001',
-        price: 125.00,
-        cost: 85.00,
-        stock: 12,
-        minStock: 3,
-        categoryId: categorias[0].id, // Diseñador
-      },
-    }),
-    prisma.product.upsert({
-      where: { sku: 'CREED-002' },
-      update: {},
-      create: {
-        name: 'Creed Aventus EDP 120ml',
-        description: 'Fragancia nicho masculina con piña, bergamota y pachulí',
-        sku: 'CREED-002',
-        price: 320.00,
-        cost: 240.00,
-        stock: 6,
-        minStock: 2,
-        categoryId: categorias[1].id, // Nicho
-      },
-    }),
-    prisma.product.upsert({
-      where: { sku: 'ARAB-003' },
-      update: {},
-      create: {
-        name: 'Oud Mood EDP 100ml',
-        description: 'Fragancia árabe unisex con oud, rosa y azafrán',
-        sku: 'ARAB-003',
-        price: 89.00,
-        cost: 55.00,
-        stock: 15,
-        minStock: 4,
-        categoryId: categorias[2].id, // Árabe
-      },
-    }),
-    prisma.product.upsert({
-      where: { sku: 'CHANEL-004' },
-      update: {},
-      create: {
-        name: 'Chanel No. 5 EDP 100ml',
-        description: 'Icónica fragancia femenina con aldehídos, ylang-ylang y sándalo',
-        sku: 'CHANEL-004',
-        price: 150.00,
-        cost: 110.00,
-        stock: 8,
-        minStock: 2,
-        categoryId: categorias[4].id, // Femenino
-      },
-    }),
-    prisma.product.upsert({
-      where: { sku: 'TOM-005' },
-      update: {},
-      create: {
-        name: 'Tom Ford Black Orchid EDP 100ml',
-        description: 'Fragancia unisex lujosa con orquídea negra, trufa y pachulí',
-        sku: 'TOM-005',
-        price: 180.00,
-        cost: 135.00,
-        stock: 10,
-        minStock: 3,
-        categoryId: categorias[3].id, // Unisex
-      },
-    }),
-    prisma.product.upsert({
-      where: { sku: 'VERSACE-006' },
-      update: {},
-      create: {
-        name: 'Versace Eros EDT 100ml',
-        description: 'Fragancia masculina seductora con menta, manzana verde y vainilla',
-        sku: 'VERSACE-006',
-        price: 95.00,
-        cost: 65.00,
-        stock: 20,
-        minStock: 5,
-        categoryId: categorias[5].id, // Masculino
-      },
-    }),
-  ]);
+  console.log(`✅ Categorías creadas: ${categorias.length}`);
 
   console.log('🎉 Seed completado:');
   console.log('- Usuarios creados:', users.length);
   console.log('- Categorías creadas:', categorias.length);
-  console.log('- Productos creados:', productos.length);
   console.log('- Configuraciones: No modificadas (manteniendo las existentes)');
 }
 
