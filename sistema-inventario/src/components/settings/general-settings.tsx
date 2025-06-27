@@ -87,7 +87,7 @@ export function GeneralSettings() {
           <CardTitle>Información de la Empresa</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="company-name">Nombre de la Empresa</Label>
               <Input
@@ -95,6 +95,7 @@ export function GeneralSettings() {
                 value={formData['company.name']}
                 onChange={(e) => handleInputChange('company.name', e.target.value)}
                 placeholder="Nombre de la empresa"
+                className="text-mobile"
               />
             </div>
             <div className="space-y-2">
@@ -104,6 +105,7 @@ export function GeneralSettings() {
                 value={formData['company.ruc']}
                 onChange={(e) => handleInputChange('company.ruc', e.target.value)}
                 placeholder="RUC o NIT"
+                className="text-mobile"
               />
             </div>
           </div>
@@ -115,10 +117,11 @@ export function GeneralSettings() {
               value={formData['company.address']}
               onChange={(e) => handleInputChange('company.address', e.target.value)}
               placeholder="Dirección de la empresa"
+              className="text-mobile"
             />
           </div>
-          
-          <div className="grid grid-cols-2 gap-4">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="company-phone">Teléfono</Label>
               <Input
@@ -126,6 +129,7 @@ export function GeneralSettings() {
                 value={formData['company.phone']}
                 onChange={(e) => handleInputChange('company.phone', e.target.value)}
                 placeholder="Teléfono de contacto"
+                className="text-mobile"
               />
             </div>
             <div className="space-y-2">
@@ -136,6 +140,7 @@ export function GeneralSettings() {
                 value={formData['company.email']}
                 onChange={(e) => handleInputChange('company.email', e.target.value)}
                 placeholder="Email de contacto"
+                className="text-mobile"
               />
             </div>
           </div>
@@ -147,7 +152,7 @@ export function GeneralSettings() {
           <CardTitle>Configuración de Inventario</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="min-stock">Stock Mínimo por Defecto</Label>
               <Input

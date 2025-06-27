@@ -45,41 +45,50 @@ export function UsersHeader({
   return (
     <>
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
+        {/* Header responsive */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Usuarios</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Usuarios</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">
               Gestiona los usuarios del sistema
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <PermissionGuard permission="users.export">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowExportDialog(true)}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Exportar
-              </Button>
-            </PermissionGuard>
-            <PermissionGuard permission="users.create">
-              <Button
-                size="sm"
-                onClick={() => setShowUserDialog(true)}
-              >
-                <UserPlus className="h-4 w-4 mr-2" />
-                Nuevo Usuario
-              </Button>
-            </PermissionGuard>
+
+          {/* Botones de acción responsive */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+            <div className="grid grid-cols-2 sm:flex gap-2">
+              <PermissionGuard permission="users.export">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowExportDialog(true)}
+                  className="w-full sm:w-auto"
+                >
+                  <Download className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Exportar</span>
+                </Button>
+              </PermissionGuard>
+              <PermissionGuard permission="users.create">
+                <Button
+                  size="sm"
+                  onClick={() => setShowUserDialog(true)}
+                  className="w-full sm:w-auto"
+                >
+                  <UserPlus className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Nuevo Usuario</span>
+                  <span className="sm:hidden">Nuevo</span>
+                </Button>
+              </PermissionGuard>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4 flex-1">
+        {/* Búsqueda, filtros y estadísticas responsive */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 flex-1">
             <Input
               placeholder="Buscar usuarios..."
-              className="max-w-sm"
+              className="w-full sm:max-w-sm text-mobile"
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
             />
@@ -87,10 +96,10 @@ export function UsersHeader({
               variant="outline"
               size="sm"
               onClick={() => setShowFiltersDialog(true)}
-              className="relative"
+              className="relative w-full sm:w-auto"
             >
-              <Filter className="h-4 w-4 mr-2" />
-              Filtros
+              <Filter className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Filtros</span>
               {getActiveFiltersCount() > 0 && (
                 <Badge
                   variant="destructive"
@@ -102,9 +111,10 @@ export function UsersHeader({
             </Button>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary">{stats.total} usuarios</Badge>
-            <Badge variant="outline">{stats.active} activos</Badge>
+          {/* Estadísticas responsive */}
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2">
+            <Badge variant="secondary" className="text-xs sm:text-sm">{stats.total} usuarios</Badge>
+            <Badge variant="outline" className="text-xs sm:text-sm">{stats.active} activos</Badge>
           </div>
         </div>
       </div>

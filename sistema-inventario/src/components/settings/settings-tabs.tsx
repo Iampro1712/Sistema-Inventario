@@ -61,27 +61,50 @@ export function SettingsTabs() {
   };
 
   return (
-    <div className="flex gap-6">
-      {/* Sidebar de tabs */}
-      <div className="w-64 space-y-1">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg transition-colors ${
-              activeTab === tab.id
-                ? "bg-primary/10 text-primary"
-                : "hover:bg-muted text-muted-foreground"
-            }`}
-          >
-            <tab.icon className="h-4 w-4" />
-            {tab.name}
-          </button>
-        ))}
+    <div className="flex flex-col lg:flex-row gap-6">
+      {/* Sidebar de tabs responsive */}
+      <div className="lg:w-64 space-y-1">
+        {/* Vista horizontal en móvil */}
+        <div className="lg:hidden">
+          <div className="flex overflow-x-auto gap-2 pb-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors whitespace-nowrap touch-target ${
+                  activeTab === tab.id
+                    ? "bg-primary/10 text-primary"
+                    : "hover:bg-muted text-muted-foreground"
+                }`}
+              >
+                <tab.icon className="h-4 w-4" />
+                <span className="hidden sm:inline">{tab.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Vista vertical en desktop */}
+        <div className="hidden lg:block space-y-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg transition-colors touch-target ${
+                activeTab === tab.id
+                  ? "bg-primary/10 text-primary"
+                  : "hover:bg-muted text-muted-foreground"
+              }`}
+            >
+              <tab.icon className="h-4 w-4" />
+              {tab.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Contenido del tab activo */}
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         {renderTabContent()}
       </div>
     </div>

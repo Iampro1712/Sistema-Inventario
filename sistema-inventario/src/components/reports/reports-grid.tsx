@@ -306,7 +306,7 @@ export function ReportsGrid() {
 
   return (
     <>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {reports.map((report) => {
           // Usar estado dinámico si existe, sino usar el estado original
           const currentState = reportStates[report.id];
@@ -323,27 +323,27 @@ export function ReportsGrid() {
             <Card key={report.id} className="animate-fade-in hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`h-10 w-10 rounded-lg ${report.bgColor} flex items-center justify-center`}>
-                      <report.icon className={`h-5 w-5 ${report.color}`} />
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-lg ${report.bgColor} flex items-center justify-center shrink-0`}>
+                      <report.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${report.color}`} />
                     </div>
-                    <div>
-                      <CardTitle className="text-lg">{report.title}</CardTitle>
+                    <div className="min-w-0 flex-1">
+                      <CardTitle className="text-base sm:text-lg truncate">{report.title}</CardTitle>
                     </div>
                   </div>
-                  <Badge variant={statusBadge.variant}>
+                  <Badge variant={statusBadge.variant} className="text-xs shrink-0">
                     {statusBadge.text}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground line-clamp-2">
                   {report.description}
                 </p>
 
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-xs text-muted-foreground">
                   <span>Última actualización:</span>
-                  <span>{currentLastGenerated}</span>
+                  <span className="font-medium">{currentLastGenerated}</span>
                 </div>
 
                 <div className="space-y-2">
@@ -352,40 +352,48 @@ export function ReportsGrid() {
                     <Button
                       variant={currentStatus === 'error' ? 'destructive' : 'default'}
                       size="sm"
-                      className="w-full"
+                      className="w-full touch-target"
                       disabled={isRegenerating}
                       onClick={() => handleRegenerateReport(report)}
                     >
                       {isRegenerating ? (
                         <>
-                          <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                          Regenerando...
+                          <RefreshCw className="h-4 w-4 sm:mr-2 animate-spin" />
+                          <span className="hidden sm:inline">Regenerando...</span>
                         </>
                       ) : (
                         <>
-                          <RefreshCw className="h-4 w-4 mr-2" />
-                          {currentStatus === 'generating' ? 'Reiniciar' :
-                           currentStatus === 'outdated' ? 'Actualizar' : 'Reintentar'}
+                          <RefreshCw className="h-4 w-4 sm:mr-2" />
+                          <span className="hidden sm:inline">
+                            {currentStatus === 'generating' ? 'Reiniciar' :
+                             currentStatus === 'outdated' ? 'Actualizar' : 'Reintentar'}
+                          </span>
+                          <span className="sm:hidden">
+                            {currentStatus === 'generating' ? 'Reiniciar' :
+                             currentStatus === 'outdated' ? 'Actualizar' : 'Reintentar'}
+                          </span>
                         </>
                       )}
                     </Button>
                   )}
 
-                  {/* Botones normales */}
+                  {/* Botones normales responsive */}
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex-1"
+                      className="flex-1 touch-target"
                       disabled={currentStatus === "generating" || isDownloading || isRegenerating}
                       onClick={() => handleDownload(report)}
                     >
-                      <Download className={`h-4 w-4 mr-2 ${isDownloading ? 'animate-spin' : ''}`} />
-                      {isDownloading ? 'Descargando...' : 'Descargar'}
+                      <Download className={`h-4 w-4 sm:mr-2 ${isDownloading ? 'animate-spin' : ''}`} />
+                      <span className="hidden sm:inline">{isDownloading ? 'Descargando...' : 'Descargar'}</span>
+                      <span className="sm:hidden">{isDownloading ? '...' : 'Descargar'}</span>
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
+                      className="touch-target"
                       disabled={currentStatus === "generating" || isViewing || isRegenerating}
                       onClick={() => handleView(report)}
                     >

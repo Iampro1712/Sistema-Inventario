@@ -243,7 +243,8 @@ export function UsersTable({ searchTerm, filters, onDataChange, currentUserRole 
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
+              {/* Vista de tabla para desktop */}
+              <div className="hidden lg:block overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b">
@@ -310,6 +311,7 @@ export function UsersTable({ searchTerm, filters, onDataChange, currentUserRole 
                           variant="ghost"
                           size="sm"
                           onClick={() => handleView(user)}
+                          className="touch-target"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -317,6 +319,7 @@ export function UsersTable({ searchTerm, filters, onDataChange, currentUserRole 
                           variant="ghost"
                           size="sm"
                           onClick={() => handleEdit(user)}
+                          className="touch-target"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -326,6 +329,7 @@ export function UsersTable({ searchTerm, filters, onDataChange, currentUserRole 
                             size="sm"
                             onClick={() => handleManagePermissions(user)}
                             title="Gestionar Permisos"
+                            className="touch-target"
                           >
                             <Settings className="h-4 w-4" />
                           </Button>
@@ -334,6 +338,7 @@ export function UsersTable({ searchTerm, filters, onDataChange, currentUserRole 
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDelete(user)}
+                          className="touch-target"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -388,25 +393,184 @@ export function UsersTable({ searchTerm, filters, onDataChange, currentUserRole 
                   </table>
                 </div>
 
-              {/* Paginación */}
-              <div className="flex items-center justify-between mt-6">
-                <p className="text-sm text-muted-foreground">
+              {/* Vista de cards para móvil y tablet */}
+              <div className="lg:hidden space-y-4">
+                {users.map((user) => {
+                  const RoleIcon = getRoleIcon(user.role);
+                  const roleBadge = getRoleBadge(user.role);
+                  const statusBadge = getStatusBadge(user.isActive);
+
+                  return (
+                    <Card key={user.id} className="border border-border">
+                      <CardContent className="p-4">
+                        <div className="space-y-3">
+                          {/* Header del usuario */}
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                <span className="text-sm font-medium text-primary">
+                                  {user.name.split(' ').map(n => n[0]).join('')}
+                                </span>
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <h3 className="font-medium text-base truncate">{user.name}</h3>
+                                <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                              </div>
+                            </div>
+                            <Badge variant={statusBadge.variant} className="text-xs shrink-0">
+                              {statusBadge.text}
+                            </Badge>
+                          </div>
+
+                          {/* Información del usuario */}
+                          <div className="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                              <span className="text-muted-foreground">Rol:</span>
+                              <div className="flex items-center gap-2 mt-1">
+                                <RoleIcon className="h-3 w-3 text-muted-foreground" />
+                                <Badge variant={roleBadge.variant} className="text-xs">
+                                  {roleBadge.text}
+                                </Badge>
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Departamento:</span>
+                              <p className="font-medium mt-1">{user.department}</p>
+                            </div>
+                            <div className="col-span-2">
+                              <span className="text-muted-foreground">Último acceso:</span>
+                              <p className="font-medium mt-1">
+                                {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString("es-ES", {
+                                  day: "2-digit",
+                                  month: "short",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }) : "Nunca"}
+                              </p>
+                            </div>
+                            <div className="col-span-2">
+                              <span className="text-muted-foreground">Miembro desde:</span>
+                              <p className="font-medium mt-1">
+                                {new Date(user.createdAt).toLocaleDateString("es-ES")}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Acciones */}
+                          <div className="flex items-center justify-end gap-1 pt-2 border-t">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleView(user)}
+                              className="touch-target"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEdit(user)}
+                              className="touch-target"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            {(currentUserRole === 'CEO' || currentUserRole === 'ADMIN') && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleManagePermissions(user)}
+                                title="Gestionar Permisos"
+                                className="touch-target"
+                              >
+                                <Settings className="h-4 w-4" />
+                              </Button>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(user)}
+                              className="touch-target"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="touch-target">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleView(user)}>
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  Ver detalles
+                                </DropdownMenuItem>
+                                <PermissionGuard permission="users.edit">
+                                  <DropdownMenuItem onClick={() => handleEdit(user)}>
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Editar
+                                  </DropdownMenuItem>
+                                </PermissionGuard>
+                                <PermissionGuard permission="users.manage_permissions">
+                                  <DropdownMenuItem onClick={() => handleManagePermissions(user)}>
+                                    <Settings className="h-4 w-4 mr-2" />
+                                    Gestionar Permisos
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                </PermissionGuard>
+                                <PermissionGuard permission="users.edit">
+                                  <DropdownMenuItem onClick={() => handleToggleStatus(user)}>
+                                    {user.isActive ? 'Desactivar' : 'Activar'} usuario
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                </PermissionGuard>
+                                <PermissionGuard permission="users.delete">
+                                  <DropdownMenuItem
+                                    onClick={() => handleDelete(user)}
+                                    className="text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Eliminar
+                                  </DropdownMenuItem>
+                                </PermissionGuard>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+
+              {/* Paginación responsive */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 pt-4 border-t">
+                <p className="text-sm text-muted-foreground text-center sm:text-left">
                   Mostrando {((pagination.page - 1) * pagination.limit) + 1}-{Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total} usuarios
                 </p>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
                     disabled={!pagination.hasPrev}
                     onClick={() => handlePageChange(pagination.page - 1)}
+                    className="hidden sm:flex"
                   >
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     Anterior
                   </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={!pagination.hasPrev}
+                    onClick={() => handlePageChange(pagination.page - 1)}
+                    className="sm:hidden w-8 h-8 p-0"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
 
-                  {/* Números de página */}
-                  {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                    const pageNum = Math.max(1, pagination.page - 2) + i;
+                  {/* Números de página responsive */}
+                  {Array.from({ length: Math.min(3, pagination.totalPages) }, (_, i) => {
+                    const pageNum = Math.max(1, pagination.page - 1) + i;
                     if (pageNum > pagination.totalPages) return null;
 
                     return (
@@ -415,6 +579,7 @@ export function UsersTable({ searchTerm, filters, onDataChange, currentUserRole 
                         variant={pageNum === pagination.page ? "default" : "outline"}
                         size="sm"
                         onClick={() => handlePageChange(pageNum)}
+                        className="w-8 h-8 p-0 touch-target"
                       >
                         {pageNum}
                       </Button>
@@ -426,9 +591,19 @@ export function UsersTable({ searchTerm, filters, onDataChange, currentUserRole 
                     size="sm"
                     disabled={!pagination.hasNext}
                     onClick={() => handlePageChange(pagination.page + 1)}
+                    className="hidden sm:flex"
                   >
                     Siguiente
                     <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={!pagination.hasNext}
+                    onClick={() => handlePageChange(pagination.page + 1)}
+                    className="sm:hidden w-8 h-8 p-0"
+                  >
+                    <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
               </div>

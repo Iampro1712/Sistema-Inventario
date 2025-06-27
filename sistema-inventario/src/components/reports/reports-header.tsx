@@ -87,65 +87,72 @@ export function ReportsHeader({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      {/* Header responsive */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Reportes</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Reportes</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Análisis y estadísticas de tu inventario
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Calendar className="h-4 w-4 mr-2" />
-                Período
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {periodos.map((periodo) => (
-                <DropdownMenuItem
-                  key={periodo.value}
-                  onClick={() => handlePeriodoChange(periodo.value)}
-                  className={currentPeriodo === periodo.value ? 'bg-accent' : ''}
-                >
-                  {periodo.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filtros
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {filtros.map((filtro) => (
-                <DropdownMenuItem
-                  key={filtro.value}
-                  onClick={() => handleFiltroChange(filtro.value)}
-                >
-                  {filtro.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+        {/* Controles responsive */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+          <div className="grid grid-cols-3 sm:flex gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                  <Calendar className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Período</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {periodos.map((periodo) => (
+                  <DropdownMenuItem
+                    key={periodo.value}
+                    onClick={() => handlePeriodoChange(periodo.value)}
+                    className={currentPeriodo === periodo.value ? 'bg-accent' : ''}
+                  >
+                    {periodo.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          <Button
-            size="sm"
-            onClick={handleExportarTodo}
-            disabled={isExporting}
-          >
-            {isExporting ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Download className="h-4 w-4 mr-2" />
-            )}
-            {isExporting ? 'Exportando...' : 'Exportar Todo'}
-          </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                  <Filter className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Filtros</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {filtros.map((filtro) => (
+                  <DropdownMenuItem
+                    key={filtro.value}
+                    onClick={() => handleFiltroChange(filtro.value)}
+                  >
+                    {filtro.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button
+              size="sm"
+              onClick={handleExportarTodo}
+              disabled={isExporting}
+              className="w-full sm:w-auto"
+            >
+              {isExporting ? (
+                <Loader2 className="h-4 w-4 sm:mr-2 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4 sm:mr-2" />
+              )}
+              <span className="hidden sm:inline">{isExporting ? 'Exportando...' : 'Exportar Todo'}</span>
+              <span className="sm:hidden">{isExporting ? 'Exportando...' : 'Exportar'}</span>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
