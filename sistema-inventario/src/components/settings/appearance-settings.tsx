@@ -49,20 +49,132 @@ export function AppearanceSettings() {
 
   useEffect(() => {
     if (!loading && Object.keys(settingsData).length > 0) {
-      setFormData({
+      const newFormData = {
         'appearance.theme': settingsData['appearance.theme'] || 'system',
         'appearance.primaryColor': settingsData['appearance.primaryColor'] || 'blue',
         'appearance.language': settingsData['appearance.language'] || 'es',
         'appearance.dateFormat': settingsData['appearance.dateFormat'] || 'DD/MM/YYYY',
-      });
+      };
+      setFormData(newFormData);
+
+      // Aplicar configuración inicial
+      applyTheme(newFormData['appearance.theme']);
+      applyPrimaryColor(newFormData['appearance.primaryColor']);
     }
   }, [settingsData, loading]);
+
+  // Cargar configuración desde localStorage al montar el componente
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 'system';
+    const savedColor = localStorage.getItem('primaryColor') || 'blue';
+
+    applyTheme(savedTheme);
+    applyPrimaryColor(savedColor);
+  }, []);
 
   const handleInputChange = (key: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       [key]: value
     }));
+
+    // Aplicar cambios inmediatamente
+    if (key === 'appearance.theme') {
+      applyTheme(value);
+    } else if (key === 'appearance.primaryColor') {
+      applyPrimaryColor(value);
+    } else if (key === 'appearance.language') {
+      applyLanguage(value);
+    } else if (key === 'appearance.dateFormat') {
+      applyDateFormat(value);
+    }
+  };
+
+  const applyTheme = (theme: string) => {
+    const root = document.documentElement;
+
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else if (theme === 'light') {
+      root.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    } else if (theme === 'system') {
+      localStorage.setItem('theme', 'system');
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (systemPrefersDark) {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+    }
+  };
+
+  const applyPrimaryColor = (color: string) => {
+    const root = document.documentElement;
+
+    // Definir colores primarios
+    const colorMap: { [key: string]: { light: string; dark: string } } = {
+      blue: { light: '217 91% 60%', dark: '217 91% 65%' },
+      green: { light: '142 76% 36%', dark: '142 76% 45%' },
+      purple: { light: '280 100% 70%', dark: '280 100% 75%' },
+      red: { light: '0 84% 60%', dark: '0 84% 65%' },
+      orange: { light: '25 95% 53%', dark: '25 95% 58%' },
+      pink: { light: '330 81% 60%', dark: '330 81% 65%' },
+    };
+
+    if (colorMap[color]) {
+      root.style.setProperty('--primary', colorMap[color].light);
+      root.style.setProperty('--primary-foreground', '220 20% 98%');
+
+      // Guardar en localStorage
+      localStorage.setItem('primaryColor', color);
+    }
+  };
+
+  const applyLanguage = (language: string) => {
+    // Guardar idioma en localStorage
+    localStorage.setItem('language', language);
+
+    // Aplicar idioma al documento
+    document.documentElement.lang = language;
+
+    // Mostrar notificación
+    const languageNames: { [key: string]: string } = {
+      es: 'Español',
+      en: 'English',
+      pt: 'Português'
+    };
+
+    toast.success(`Idioma cambiado a ${languageNames[language] || language}`);
+  };
+
+  const applyDateFormat = (format: string) => {
+    // Guardar formato de fecha en localStorage
+    localStorage.setItem('dateFormat', format);
+
+    // Mostrar vista previa del formato
+    const now = new Date();
+    let preview = '';
+
+    switch (format) {
+      case 'DD/MM/YYYY':
+        preview = now.toLocaleDateString('es-ES');
+        break;
+      case 'MM/DD/YYYY':
+        preview = now.toLocaleDateString('en-US');
+        break;
+      case 'YYYY-MM-DD':
+        preview = now.toISOString().split('T')[0];
+        break;
+      case 'DD-MM-YYYY':
+        preview = now.toLocaleDateString('es-ES').replace(/\//g, '-');
+        break;
+      default:
+        preview = now.toLocaleDateString();
+    }
+
+    toast.success(`Formato de fecha cambiado: ${preview}`);
   };
 
   const handleSave = async () => {
@@ -242,6 +354,88 @@ export function AppearanceSettings() {
                   year: 'numeric'
                 })}
               </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Vista Previa */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Monitor className="h-5 w-5" />
+            Vista Previa
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="p-4 border rounded-lg bg-card">
+              <h4 className="font-medium mb-2">Configuración Actual</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div>
+                  <span className="text-muted-foreground">Tema:</span>
+                  <p className="font-medium capitalize">{formData['appearance.theme']}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Color:</span>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-full ${colors.find(c => c.value === formData['appearance.primaryColor'])?.color}`} />
+                    <span className="font-medium">{colors.find(c => c.value === formData['appearance.primaryColor'])?.label}</span>
+                  </div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Idioma:</span>
+                  <p className="font-medium">{languages.find(l => l.value === formData['appearance.language'])?.label}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Fecha:</span>
+                  <p className="font-medium">{(() => {
+                    const now = new Date();
+                    switch (formData['appearance.dateFormat']) {
+                      case 'DD/MM/YYYY':
+                        return now.toLocaleDateString('es-ES');
+                      case 'MM/DD/YYYY':
+                        return now.toLocaleDateString('en-US');
+                      case 'YYYY-MM-DD':
+                        return now.toISOString().split('T')[0];
+                      case 'DD-MM-YYYY':
+                        return now.toLocaleDateString('es-ES').replace(/\//g, '-');
+                      default:
+                        return now.toLocaleDateString();
+                    }
+                  })()}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 border rounded-lg bg-card">
+              <h4 className="font-medium mb-2">Ejemplo de Interfaz</h4>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2 bg-muted rounded">
+                  <span className="text-sm">Producto de ejemplo</span>
+                  <Button size="sm" className="h-6 px-2 text-xs">Ver</Button>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-muted rounded">
+                  <span className="text-sm">Movimiento reciente</span>
+                  <span className="text-xs text-muted-foreground">
+                    {(() => {
+                      const now = new Date();
+                      switch (formData['appearance.dateFormat']) {
+                        case 'DD/MM/YYYY':
+                          return now.toLocaleDateString('es-ES');
+                        case 'MM/DD/YYYY':
+                          return now.toLocaleDateString('en-US');
+                        case 'YYYY-MM-DD':
+                          return now.toISOString().split('T')[0];
+                        case 'DD-MM-YYYY':
+                          return now.toLocaleDateString('es-ES').replace(/\//g, '-');
+                        default:
+                          return now.toLocaleDateString();
+                      }
+                    })()}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </CardContent>

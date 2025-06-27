@@ -103,36 +103,38 @@ export function ReportsCharts({
         </Button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-3">
         <Card className="animate-fade-in lg:col-span-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5" />
-              Ventas vs Compras ({periodo === '1m' ? '1 mes' : periodo === '3m' ? '3 meses' : periodo === '6m' ? '6 meses' : '1 año'})
+            <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+              <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="hidden sm:inline">Ventas vs Compras ({periodo === '1m' ? '1 mes' : periodo === '3m' ? '3 meses' : periodo === '6m' ? '6 meses' : '1 año'})</span>
+              <span className="sm:hidden">Ventas vs Compras</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="h-80 w-full flex items-center justify-center">
-                <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+              <div className="h-60 sm:h-80 w-full flex items-center justify-center">
+                <RefreshCw className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-muted-foreground" />
               </div>
             ) : salesData.length === 0 ? (
-              <div className="h-80 w-full flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <div className="text-lg font-medium mb-2">No hay datos disponibles</div>
-                  <div className="text-sm">Los gráficos aparecerán cuando haya datos de ventas y compras</div>
+              <div className="h-60 sm:h-80 w-full flex items-center justify-center">
+                <div className="text-center text-muted-foreground px-4">
+                  <div className="text-base sm:text-lg font-medium mb-2">No hay datos disponibles</div>
+                  <div className="text-xs sm:text-sm">Los gráficos aparecerán cuando haya datos de ventas y compras</div>
                 </div>
               </div>
             ) : (
-              <div className="h-80 w-full overflow-hidden">
-                <div className="flex items-end justify-between h-48 gap-1 mb-4 px-2">
+              <div className="h-60 sm:h-80 w-full overflow-hidden">
+                <div className="flex items-end justify-between h-32 sm:h-48 gap-1 mb-4 px-1 sm:px-2">
                   {salesData.map((data, index) => {
-                    const salesHeight = maxSalesValue > 0 ? Math.max((data.sales / maxSalesValue) * 120, data.sales > 0 ? 4 : 0) : 0;
-                    const purchasesHeight = maxSalesValue > 0 ? Math.max((data.purchases / maxSalesValue) * 120, data.purchases > 0 ? 4 : 0) : 0;
+                    const maxHeight = window.innerWidth < 640 ? 80 : 120; // Altura responsive
+                    const salesHeight = maxSalesValue > 0 ? Math.max((data.sales / maxSalesValue) * maxHeight, data.sales > 0 ? 4 : 0) : 0;
+                    const purchasesHeight = maxSalesValue > 0 ? Math.max((data.purchases / maxSalesValue) * maxHeight, data.purchases > 0 ? 4 : 0) : 0;
 
                     return (
-                      <div key={data.month} className="flex flex-col items-center flex-1 min-w-0 max-w-[80px]">
-                        <div className="flex flex-col items-center justify-end h-full gap-0.5 w-full max-w-[60px]">
+                      <div key={data.month} className="flex flex-col items-center flex-1 min-w-0 max-w-[60px] sm:max-w-[80px]">
+                        <div className="flex flex-col items-center justify-end h-full gap-0.5 w-full max-w-[40px] sm:max-w-[60px]">
                           {/* Barra de Ventas */}
                           <div
                             className="w-full bg-blue-500 rounded-t-sm opacity-80 hover:opacity-100 transition-all duration-200 cursor-pointer"
@@ -183,29 +185,30 @@ export function ReportsCharts({
 
         <Card className="animate-fade-in">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <PieChart className="h-5 w-5" />
-              Distribución por Categorías
+            <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+              <PieChart className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="hidden sm:inline">Distribución por Categorías</span>
+              <span className="sm:hidden">Por Categorías</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="h-40 w-full flex items-center justify-center">
-                <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+              <div className="h-32 sm:h-40 w-full flex items-center justify-center">
+                <RefreshCw className="h-5 w-5 sm:h-6 sm:w-6 animate-spin text-muted-foreground" />
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {categoryData.map((category, index) => (
-                  <div key={category.name} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                  <div key={category.name} className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                       <div
-                        className="w-4 h-4 rounded-sm"
+                        className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm shrink-0"
                         style={{ backgroundColor: category.color }}
                       />
-                      <span className="text-sm font-medium">{category.name}</span>
+                      <span className="text-xs sm:text-sm font-medium truncate">{category.name}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-20 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                      <div className="w-12 sm:w-20 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all duration-300"
                           style={{
@@ -214,7 +217,7 @@ export function ReportsCharts({
                           }}
                         />
                       </div>
-                      <span className="text-sm text-muted-foreground w-8">
+                      <span className="text-xs sm:text-sm text-muted-foreground w-6 sm:w-8 text-right">
                         {category.percentage}%
                       </span>
                     </div>
@@ -233,19 +236,22 @@ export function ReportsCharts({
         {/* Top Productos */}
         <Card className="animate-fade-in lg:col-span-3">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Productos Más Vendidos
+            <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="hidden sm:inline">Productos Más Vendidos</span>
+              <span className="sm:hidden">Más Vendidos</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="h-40 w-full flex items-center justify-center">
-                <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+              <div className="h-32 sm:h-40 w-full flex items-center justify-center">
+                <RefreshCw className="h-5 w-5 sm:h-6 sm:w-6 animate-spin text-muted-foreground" />
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
+              <>
+                {/* Vista de tabla para desktop */}
+                <div className="hidden lg:block overflow-x-auto">
+                  <table className="w-full">
                   <thead>
                     <tr className="border-b">
                       <th className="text-left py-2 px-4 font-medium text-muted-foreground">Producto</th>
@@ -290,7 +296,48 @@ export function ReportsCharts({
                     )}
                   </tbody>
                 </table>
-              </div>
+                </div>
+
+                {/* Vista de cards para móvil */}
+                <div className="lg:hidden space-y-3">
+                  {topProducts.length === 0 ? (
+                    <div className="py-8 text-center text-muted-foreground">
+                      <div className="text-sm">No hay datos de productos disponibles</div>
+                    </div>
+                  ) : (
+                    topProducts.map((product, index) => (
+                      <div key={product.name} className="border rounded-lg p-3 bg-card">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded">
+                                #{index + 1}
+                              </span>
+                              <h4 className="font-medium text-sm truncate flex-1">{product.name}</h4>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <TrendingUp className="h-3 w-3 text-green-500" />
+                              <span className="text-xs text-green-600 dark:text-green-400">
+                                +{product.trend}%
+                              </span>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                              <span className="text-muted-foreground">Ventas:</span>
+                              <p className="font-medium">{product.sales} unidades</p>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Ingresos:</span>
+                              <p className="font-medium">${product.revenue.toLocaleString()}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
