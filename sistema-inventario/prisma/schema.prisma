@@ -2,9 +2,8 @@
 // learn more about it in the docs: https://pris.ma/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
-  binaryTargets = ["native", "rhel-openssl-1.0.x"]
-  engineType = "library"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x", "linux-musl"]
 }
 
 datasource db {

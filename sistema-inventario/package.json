@@ -7,8 +7,8 @@
     "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint --fix",
-    "build:netlify": "npm run prisma:generate:netlify && SKIP_ENV_VALIDATION=true next build",
-    "prisma:generate:netlify": "PRISMA_CLI_BINARY_TARGETS=rhel-openssl-1.0.x PRISMA_GENERATE_SKIP_AUTOINSTALL=true npx prisma generate --generator client",
+    "build:netlify": "SKIP_ENV_VALIDATION=true next build",
+    "postinstall": "prisma generate",
     "update-passwords": "node scripts/update-passwords.js"
   },
   "dependencies": {

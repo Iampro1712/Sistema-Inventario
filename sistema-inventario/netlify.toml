@@ -5,8 +5,6 @@
 [build.environment]
   NODE_VERSION = "18"
   SKIP_ENV_VALIDATION = "true"
-  PRISMA_CLI_BINARY_TARGETS = "rhel-openssl-1.0.x"
-  PRISMA_GENERATE_SKIP_AUTOINSTALL = "true"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
