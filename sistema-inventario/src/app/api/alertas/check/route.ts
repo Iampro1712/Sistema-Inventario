@@ -4,7 +4,7 @@ import { checkAndNotifyStockAlerts } from '@/lib/notification-helpers';
 
 // POST - Ejecutar verificación manual de alertas de stock
 export async function POST(request: NextRequest) {
-  const authResult = await requirePermission(request, 'inventory.view');
+  const authResult = await requirePermission(request, 'alerts.view');
   if (authResult instanceof NextResponse) {
     return authResult;
   }
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
 // GET - Obtener estado de las alertas automáticas
 export async function GET(request: NextRequest) {
-  const authResult = await requirePermission(request, 'inventory.view');
+  const authResult = await requirePermission(request, 'alerts.view');
   if (authResult instanceof NextResponse) {
     return authResult;
   }

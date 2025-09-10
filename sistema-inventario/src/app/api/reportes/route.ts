@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
     // Calcular fechas según el período
     const now = new Date();
-    let startDate = new Date();
+    const startDate = new Date();
     
     switch (periodo) {
       case '1m':
@@ -29,7 +29,22 @@ export async function GET(request: Request) {
         startDate.setMonth(now.getMonth() - 6);
     }
 
-    // Procesar datos por mes
+    // Obtener todos los movimientos de una vez para optimizar
+    const allMovements = await prisma.stockMovement.findMany({
+      where: {
+        createdAt: {
+          gte: startDate
+        }
+      },
+      select: {
+        type: true,
+        quantity: true,
+        createdAt: true,
+        productId: true
+      }
+    });
+
+    // Procesar datos por mes usando los datos ya obtenidos
     const monthlyData = [];
     for (let i = 5; i >= 0; i--) {
       const date = new Date();
@@ -39,36 +54,22 @@ export async function GET(request: Request) {
       const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
       const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
       
-      const sales = await prisma.stockMovement.aggregate({
-        where: {
-          type: 'OUT',
-          createdAt: {
-            gte: monthStart,
-            lte: monthEnd
-          }
-        },
-        _sum: {
-          quantity: true
-        }
-      });
-
-      const purchases = await prisma.stockMovement.aggregate({
-        where: {
-          type: 'IN',
-          createdAt: {
-            gte: monthStart,
-            lte: monthEnd
-          }
-        },
-        _sum: {
-          quantity: true
-        }
-      });
+      const monthMovements = allMovements.filter(m => 
+        m.createdAt >= monthStart && m.createdAt <= monthEnd
+      );
+      
+      const sales = monthMovements
+        .filter(m => m.type === 'OUT')
+        .reduce((sum, m) => sum + (m.quantity || 0), 0);
+        
+      const purchases = monthMovements
+        .filter(m => m.type === 'IN')
+        .reduce((sum, m) => sum + (m.quantity || 0), 0);
 
       monthlyData.push({
         month: monthName,
-        sales: sales._sum.quantity || 0,
-        purchases: purchases._sum.quantity || 0
+        sales,
+        purchases
       });
     }
 
@@ -91,40 +92,34 @@ export async function GET(request: Request) {
       color: cat.color
     }));
 
-    // Obtener productos más vendidos
-    const topProducts = await prisma.stockMovement.groupBy({
-      by: ['productId'],
-      where: {
-        type: 'OUT',
-        createdAt: {
-          gte: startDate
-        }
-      },
-      _sum: {
-        quantity: true
-      },
-      orderBy: {
-        _sum: {
-          quantity: 'desc'
-        }
-      },
-      take: 5
-    });
+    // Obtener productos más vendidos usando los datos ya obtenidos
+    const salesMovements = allMovements.filter(m => m.type === 'OUT');
+    const productSales = salesMovements.reduce((acc, movement) => {
+       if (movement.productId) {
+         acc[movement.productId] = (acc[movement.productId] || 0) + (movement.quantity || 0);
+       }
+       return acc;
+     }, {} as Record<string, number>);
 
-    const topProductsData = await Promise.all(
-      topProducts.map(async (item) => {
+    const topProductIds = Object.entries(productSales)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([id]) => id);
+
+    const topProductsData = topProductIds.length > 0 ? await Promise.all(
+      topProductIds.map(async (productId) => {
         const product = await prisma.product.findUnique({
-          where: { id: item.productId }
+          where: { id: productId }
         });
         
         return {
           name: product?.name || 'Producto desconocido',
-          sales: item._sum.quantity || 0,
-          revenue: (item._sum.quantity || 0) * (product?.price || 0),
+          sales: productSales[productId] || 0,
+          revenue: (productSales[productId] || 0) * (product?.price || 0),
           trend: Math.floor(Math.random() * 20 + 5) // Tendencia simulada por ahora
         };
       })
-    );
+    ) : [];
 
     return NextResponse.json({
       salesData: monthlyData,

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSettings } from "@/hooks/use-settings";
+import { useLanguage } from "@/contexts/language-context";
 import { Save, Loader2, Palette, Monitor, Sun, Moon } from "lucide-react";
 import { toast } from "sonner";
 
@@ -39,6 +40,7 @@ const dateFormats = [
 
 export function AppearanceSettings() {
   const { settingsData, loading, updateMultipleSettings, getSetting } = useSettings('appearance');
+  const { language, setLanguage, t } = useLanguage();
   const [formData, setFormData] = useState({
     'appearance.theme': 'system',
     'appearance.primaryColor': 'blue',
@@ -132,12 +134,9 @@ export function AppearanceSettings() {
     }
   };
 
-  const applyLanguage = (language: string) => {
-    // Guardar idioma en localStorage
-    localStorage.setItem('language', language);
-
-    // Aplicar idioma al documento
-    document.documentElement.lang = language;
+  const applyLanguage = (newLanguage: string) => {
+    // Usar el contexto de idioma
+    setLanguage(newLanguage as 'es' | 'en' | 'pt');
 
     // Mostrar notificación
     const languageNames: { [key: string]: string } = {
@@ -146,7 +145,7 @@ export function AppearanceSettings() {
       pt: 'Português'
     };
 
-    toast.success(`Idioma cambiado a ${languageNames[language] || language}`);
+    toast.success(`${t('messages.languageChanged')} ${languageNames[newLanguage] || newLanguage}`);
   };
 
   const applyDateFormat = (format: string) => {
@@ -262,7 +261,7 @@ export function AppearanceSettings() {
           </div>
 
           <div className="space-y-3">
-            <Label>Color principal</Label>
+            <Label>{t('settings.primaryColor')}</Label>
             <div className="grid grid-cols-6 gap-3">
               {colors.map((color) => (
                 <Button
@@ -290,7 +289,7 @@ export function AppearanceSettings() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="language">Idioma</Label>
+            <Label htmlFor="language">{t('settings.language')}</Label>
             <Select
               value={formData['appearance.language']}
               onValueChange={(value) => handleInputChange('appearance.language', value)}
@@ -309,7 +308,7 @@ export function AppearanceSettings() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="date-format">Formato de fecha</Label>
+            <Label htmlFor="date-format">{t('settings.dateFormat')}</Label>
             <Select
               value={formData['appearance.dateFormat']}
               onValueChange={(value) => handleInputChange('appearance.dateFormat', value)}

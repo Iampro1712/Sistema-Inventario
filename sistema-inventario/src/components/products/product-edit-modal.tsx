@@ -24,6 +24,7 @@ interface Product {
   stock: number;
   minStock: number;
   categoryId?: string;
+  createdAt?: string;
   category?: {
     id: string;
     name: string;

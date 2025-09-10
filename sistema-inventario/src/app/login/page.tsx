@@ -79,7 +79,7 @@ function LoginForm() {
               <Building className="h-6 w-6 text-primary-foreground" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold">Sistema de Inventario</h1>
+          <h1 className="text-2xl font-bold">Inventrix</h1>
           <p className="text-muted-foreground">
             Inicia sesión en tu cuenta
           </p>
@@ -163,40 +163,11 @@ function LoginForm() {
           </CardContent>
         </Card>
 
-        {/* Credenciales de prueba */}
-        <Card className="bg-muted/50">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm">Credenciales de Prueba</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-xs">
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <p className="font-medium text-purple-700 dark:text-purple-300">CEO:</p>
-                <p>juan.perez@empresa.com</p>
-                <p className="text-muted-foreground">admin123</p>
-              </div>
-              <div>
-                <p className="font-medium text-blue-700 dark:text-blue-300">ADMIN:</p>
-                <p>maria.garcia@empresa.com</p>
-                <p className="text-muted-foreground">admin456</p>
-              </div>
-              <div>
-                <p className="font-medium text-green-700 dark:text-green-300">MANAGER:</p>
-                <p>carlos.lopez@empresa.com</p>
-                <p className="text-muted-foreground">manager789</p>
-              </div>
-              <div>
-                <p className="font-medium text-orange-700 dark:text-orange-300">VENDEDOR:</p>
-                <p>ana.martinez@empresa.com</p>
-                <p className="text-muted-foreground">vendedor123</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+
 
         {/* Footer */}
         <div className="text-center text-sm text-muted-foreground">
-          <p>© 2024 Sistema de Inventario. Todos los derechos reservados.</p>
+          <p>© 2024 Inventrix. Todos los derechos reservados.</p>
         </div>
       </div>
     </div>

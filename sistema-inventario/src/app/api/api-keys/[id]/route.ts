@@ -8,7 +8,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   // Solo ADMIN y CEO pueden modificar API Keys
-  const authResult = await requirePermission(request, 'settings.write');
+  const authResult = await requirePermission(request, 'settings.edit');
   if (authResult instanceof NextResponse) {
     return authResult;
   }

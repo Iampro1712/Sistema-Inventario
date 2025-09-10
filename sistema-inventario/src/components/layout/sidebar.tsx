@@ -19,16 +19,17 @@ import {
 import { cn } from "@/lib/utils";
 import { useNavigation } from "@/contexts/navigation-context";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLanguage } from "@/contexts/language-context";
 
 const allNavigation = [
-  { name: "Dashboard", href: "/", icon: Home, section: "dashboard" },
-  { name: "Productos", href: "/productos", icon: Package, section: "productos" },
-  { name: "Categorías", href: "/categorias", icon: Tags, section: "categorias" },
-  { name: "Movimientos", href: "/movimientos", icon: TrendingUp, section: "movimientos" },
-  { name: "Alertas", href: "/alertas", icon: AlertTriangle, section: "alertas" },
-  { name: "Reportes", href: "/reportes", icon: BarChart3, section: "reportes" },
-  { name: "Usuarios", href: "/usuarios", icon: Users, section: "usuarios" },
-  { name: "Configuración", href: "/configuracion", icon: Settings, section: "configuracion" },
+  { nameKey: "nav.dashboard", href: "/", icon: Home, section: "dashboard" },
+  { nameKey: "nav.products", href: "/productos", icon: Package, section: "productos" },
+  { nameKey: "nav.categories", href: "/categorias", icon: Tags, section: "categorias" },
+  { nameKey: "nav.movements", href: "/movimientos", icon: TrendingUp, section: "movimientos" },
+  { nameKey: "nav.alerts", href: "/alertas", icon: AlertTriangle, section: "alertas" },
+  { nameKey: "nav.reports", href: "/reportes", icon: BarChart3, section: "reportes" },
+  { nameKey: "nav.users", href: "/usuarios", icon: Users, section: "usuarios" },
+  { nameKey: "nav.settings", href: "/configuracion", icon: Settings, section: "configuracion" },
 ];
 
 interface SidebarProps {
@@ -40,6 +41,7 @@ export function Sidebar({ open, setOpen }: SidebarProps) {
   const pathname = usePathname();
   const { navigate } = useNavigation();
   const { checkSectionAccess } = usePermissions();
+  const { t } = useLanguage();
 
   // Filtrar navegación basada en permisos
   const navigation = allNavigation.filter(item =>
@@ -101,7 +103,7 @@ export function Sidebar({ open, setOpen }: SidebarProps) {
                         <Package className="h-6 w-6 text-primary-foreground" />
                       </div>
                       <span className="text-xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
-                        Inventario
+                        Inventrix
                       </span>
                     </div>
                   </div>
@@ -110,7 +112,7 @@ export function Sidebar({ open, setOpen }: SidebarProps) {
                       <li>
                         <ul role="list" className="-mx-2 space-y-1">
                           {navigation.map((item) => (
-                            <li key={item.name}>
+                            <li key={item.nameKey}>
                               <button
                                 onClick={() => {
                                   setOpen(false);
@@ -132,7 +134,7 @@ export function Sidebar({ open, setOpen }: SidebarProps) {
                                   )}
                                   aria-hidden="true"
                                 />
-                                {item.name}
+                                {item.nameKey.startsWith('nav.') ? t(item.nameKey) : item.nameKey}
                               </button>
                             </li>
                           ))}
@@ -156,7 +158,7 @@ export function Sidebar({ open, setOpen }: SidebarProps) {
                 <Package className="h-7 w-7 text-primary-foreground" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-foreground via-primary to-primary/80 bg-clip-text text-transparent">
-                Sistema Inventario
+                Inventrix
               </span>
             </div>
           </div>
@@ -165,7 +167,7 @@ export function Sidebar({ open, setOpen }: SidebarProps) {
               <li>
                 <ul role="list" className="-mx-2 space-y-1">
                   {navigation.map((item) => (
-                    <li key={item.name}>
+                    <li key={item.nameKey}>
                       <button
                         onClick={() => navigate(item.href)}
                         className={cn(
@@ -184,7 +186,7 @@ export function Sidebar({ open, setOpen }: SidebarProps) {
                           )}
                           aria-hidden="true"
                         />
-                        {item.name}
+                        {item.nameKey.startsWith('nav.') ? t(item.nameKey) : item.nameKey}
                       </button>
                     </li>
                   ))}

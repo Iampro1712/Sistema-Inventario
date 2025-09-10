@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { requireUserManagement, requirePermission } from '@/lib/auth-middleware';
 import { notifyNewUser } from '@/lib/notification-helpers';
+import { getFallbackUsers } from '@/lib/users-data';
 
 const prisma = new PrismaClient();
 
@@ -303,14 +304,16 @@ export async function GET(request: NextRequest) {
     return authResult;
   }
 
+  // Extraer parámetros de búsqueda fuera del try para que estén disponibles en el catch
+  const { searchParams } = new URL(request.url);
+  const page = parseInt(searchParams.get('page') || '1');
+  const limit = parseInt(searchParams.get('limit') || '6');
+  const search = searchParams.get('search') || '';
+  const role = searchParams.get('role') || '';
+  const status = searchParams.get('status') || '';
+  const department = searchParams.get('department') || '';
+
   try {
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '6');
-    const search = searchParams.get('search') || '';
-    const role = searchParams.get('role') || '';
-    const status = searchParams.get('status') || '';
-    const department = searchParams.get('department') || '';
 
     // Construir filtros para Prisma
     const where: any = {};
@@ -380,7 +383,7 @@ export async function GET(request: NextRequest) {
 
     // Fallback: usar el sistema unificado
     try {
-      const users = getAllUsers();
+      const users = getFallbackUsers();
 
       // Aplicar filtros manualmente
       let filteredUsers = users;
@@ -485,11 +488,13 @@ export async function POST(request: NextRequest) {
     await notifyNewUser(newUser.id, user.id);
 
     return NextResponse.json(formatUser(newUser), { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error al crear usuario:', error);
 
     // Manejar error de email duplicado
-    if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002' && 
+        'meta' in error && error.meta && typeof error.meta === 'object' && 
+        'target' in error.meta && Array.isArray(error.meta.target) && error.meta.target.includes('email')) {
       return NextResponse.json(
         { error: 'Ya existe un usuario con este email' },
         { status: 400 }
@@ -504,6 +509,12 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  // Verificar permisos para actualizar usuarios
+  const authResult = await requirePermission(request, 'users.edit');
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
+
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
@@ -524,17 +535,19 @@ export async function PUT(request: NextRequest) {
     });
 
     return NextResponse.json(formatUser(updatedUser));
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error al actualizar usuario:', error);
 
-    if (error.code === 'P2025') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
       return NextResponse.json(
         { error: 'Usuario no encontrado' },
         { status: 404 }
       );
     }
 
-    if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002' && 
+        'meta' in error && error.meta && typeof error.meta === 'object' && 
+        'target' in error.meta && Array.isArray(error.meta.target) && error.meta.target.includes('email')) {
       return NextResponse.json(
         { error: 'Ya existe un usuario con este email' },
         { status: 400 }
@@ -549,6 +562,12 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  // Verificar permisos para eliminar usuarios
+  const authResult = await requirePermission(request, 'users.delete');
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id') || '';
@@ -559,10 +578,10 @@ export async function DELETE(request: NextRequest) {
     });
 
     return NextResponse.json({ message: 'Usuario eliminado correctamente' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error al eliminar usuario:', error);
 
-    if (error.code === 'P2025') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
       return NextResponse.json(
         { error: 'Usuario no encontrado' },
         { status: 404 }

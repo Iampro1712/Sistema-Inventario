@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     const newApiKey = await apiKeyService.createApiKey({
       name,
       permissions,
-      expiresAt: expiresAt ? new Date(expiresAt) : undefined,
+      expiresAt: expiresAt ? new Date(expiresAt) : null,
       createdBy: user.id,
     });
 

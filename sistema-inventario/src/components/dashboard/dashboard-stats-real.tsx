@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Package, Tag, Users, TrendingUp, AlertTriangle, Activity } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/contexts/language-context";
 
 interface DashboardStats {
   totalProducts: number;
@@ -48,8 +49,10 @@ interface DashboardStats {
 }
 
 export function DashboardStatsReal() {
+  const { t, language } = useLanguage();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchStats();
@@ -58,15 +61,26 @@ export function DashboardStatsReal() {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/dashboard/stats');
+      setError(null);
+      const response = await fetch('/api/dashboard/stats', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
       if (response.ok) {
         const data = await response.json();
         setStats(data);
       } else {
-        console.error('Error al cargar estadísticas');
+        const errorText = await response.text();
+        setError(`Error ${response.status}: ${errorText}`);
+        console.error('Error al cargar estadísticas:', response.status, errorText);
       }
     } catch (error) {
-      console.error('Error al cargar estadísticas:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+        setError(`Error de conexión: ${errorMessage}`);
+        console.error('Error al cargar estadísticas:', error);
     } finally {
       setLoading(false);
     }
@@ -87,12 +101,34 @@ export function DashboardStatsReal() {
     );
   }
 
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="py-8">
+          <div className="text-center">
+            <div className="text-red-600 mb-2">
+              <AlertTriangle className="h-8 w-8 mx-auto mb-2" />
+              {t('dashboard.errorLoading')}
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">{error}</p>
+            <button 
+              onClick={fetchStats}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+            >
+              {t('dashboard.retry')}
+            </button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (!stats) {
     return (
       <Card>
         <CardContent className="py-8">
           <div className="text-center text-muted-foreground">
-            Error al cargar las estadísticas
+            {t('dashboard.noDataAvailable')}
           </div>
         </CardContent>
       </Card>
@@ -100,16 +136,8 @@ export function DashboardStatsReal() {
   }
 
   const getMovementTypeText = (type: string) => {
-    switch (type) {
-      case 'IN':
-        return 'Entrada';
-      case 'OUT':
-        return 'Salida';
-      case 'ADJUSTMENT':
-        return 'Ajuste';
-      default:
-        return type;
-    }
+    const movementTypes = t('dashboard.movementTypes') as any;
+    return movementTypes[type] || type;
   };
 
   const getMovementTypeColor = (type: string) => {
@@ -131,7 +159,7 @@ export function DashboardStatsReal() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card className="card-enhanced animate-fade-in">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Productos</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.totalProducts')}</CardTitle>
             <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
               <Package className="h-4 w-4 text-white" />
             </div>
@@ -141,7 +169,7 @@ export function DashboardStatsReal() {
             <p className="text-xs text-muted-foreground">
               {stats.lowStockProducts > 0 && (
                 <span className="text-orange-600">
-                  {stats.lowStockProducts} con stock bajo
+                  {stats.lowStockProducts} {t('dashboard.withLowStock')}
                 </span>
               )}
             </p>
@@ -150,7 +178,7 @@ export function DashboardStatsReal() {
 
         <Card className="card-enhanced animate-fade-in">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Valor Inventario</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.inventoryValue')}</CardTitle>
             <div className="p-2 rounded-lg bg-gradient-to-br from-green-500 to-green-600 shadow-lg">
               <TrendingUp className="h-4 w-4 text-white" />
             </div>
@@ -160,14 +188,14 @@ export function DashboardStatsReal() {
               ${stats.totalInventoryValue.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">
-              Valor total estimado
+              {t('dashboard.totalEstimatedValue')}
             </p>
           </CardContent>
         </Card>
 
         <Card className="card-enhanced animate-fade-in">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Categorías</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.categories')}</CardTitle>
             <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg">
               <Tag className="h-4 w-4 text-white" />
             </div>
@@ -175,14 +203,14 @@ export function DashboardStatsReal() {
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalCategories}</div>
             <p className="text-xs text-muted-foreground">
-              Organizando productos
+              {t('dashboard.organizingProducts')}
             </p>
           </CardContent>
         </Card>
 
         <Card className="card-enhanced animate-fade-in">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Movimientos (7d)</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.movements7d')}</CardTitle>
             <div className="p-2 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg">
               <Activity className="h-4 w-4 text-white" />
             </div>
@@ -190,7 +218,7 @@ export function DashboardStatsReal() {
           <CardContent>
             <div className="text-2xl font-bold">{stats.recentMovements}</div>
             <p className="text-xs text-muted-foreground">
-              Actividad reciente
+              {t('dashboard.recentActivity')}
             </p>
           </CardContent>
         </Card>
@@ -205,13 +233,13 @@ export function DashboardStatsReal() {
               <div className="p-2 rounded-lg bg-gradient-to-br from-red-500 to-red-600 shadow-lg">
                 <AlertTriangle className="h-5 w-5 text-white" />
               </div>
-              Alertas de Stock
+              {t('dashboard.stockAlerts')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {stats.lowStockProductsList.length === 0 ? (
               <p className="text-muted-foreground text-sm">
-                ¡Excelente! No hay productos con stock bajo.
+                {t('dashboard.noLowStock')}
               </p>
             ) : (
               <div className="space-y-3">
@@ -237,7 +265,7 @@ export function DashboardStatsReal() {
                         {product.stock} / {product.minStock}
                       </p>
                       <Badge variant={product.stock === 0 ? "destructive" : "secondary"}>
-                        {product.stock === 0 ? "Sin Stock" : "Stock Bajo"}
+                        {product.stock === 0 ? t('dashboard.outOfStock') : t('dashboard.lowStockBadge')}
                       </Badge>
                     </div>
                   </div>
@@ -254,13 +282,13 @@ export function DashboardStatsReal() {
               <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg">
                 <Activity className="h-5 w-5 text-white" />
               </div>
-              Movimientos Recientes
+              {t('dashboard.recentMovements')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {stats.recentMovementsList.length === 0 ? (
               <p className="text-muted-foreground text-sm">
-                No hay movimientos recientes.
+                {t('dashboard.noRecentMovements')}
               </p>
             ) : (
               <div className="space-y-3">

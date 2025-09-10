@@ -110,6 +110,28 @@ El sistema incluye un sistema de temas completo:
 - Componentes adaptables
 - Persistencia de preferencias
 
+## 📋 Changelog
+
+### Versión 2.0.0 - 9 de Septiembre de 2025
+
+#### 🐛 Correcciones de Errores
+- **TypeScript**: Corregidos todos los errores de compilación de TypeScript
+- **API Keys**: Solucionado el tipo `expiresAt` de `undefined` a `null` para compatibilidad con el schema
+- **Dashboard Stats**: Eliminado el include de `user` inexistente en el modelo StockMovement
+- **Productos API**: Corregida la relación de `stockMovements` a `movements` según el schema de Prisma
+- **Usuarios API**: Actualizado el permiso de `'users.update'` a `'users.edit'` para consistencia
+- **Movimientos**: Simplificado el mapeo de usuarios para usar 'Sistema' como valor por defecto
+
+#### 🔧 Mejoras Técnicas
+- **Compilación**: El proyecto ahora compila sin errores con `npx tsc --noEmit`
+- **Tipos**: Mejorada la consistencia de tipos en toda la aplicación
+- **Base de Datos**: Alineadas las consultas Prisma con el schema definido
+- **Permisos**: Estandarizado el sistema de permisos en las APIs
+
+#### 📚 Documentación
+- Agregado changelog para seguimiento de versiones
+- Documentadas las correcciones realizadas
+
 ---
 
 **Desarrollado con ❤️ usando Next.js y Tailwind CSS**

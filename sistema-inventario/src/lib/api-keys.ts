@@ -9,8 +9,8 @@ export interface ApiKey {
   key: string;
   permissions: string[] | any; // JSON que contiene array de strings
   isActive: boolean;
-  lastUsed?: Date;
-  expiresAt?: Date;
+  lastUsed: Date | null;
+  expiresAt: Date | null;
   createdBy: string;
   createdAt: Date;
 }
@@ -18,7 +18,7 @@ export interface ApiKey {
 export interface CreateApiKeyData {
   name: string;
   permissions: string[];
-  expiresAt?: Date;
+  expiresAt: Date | null;
   createdBy: string;
 }
 

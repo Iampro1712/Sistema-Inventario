@@ -82,7 +82,7 @@ export function UserDialog({ open, onOpenChange, user, onSave }: UserDialogProps
       }
 
       // Preparar datos para enviar
-      let bodyData = { ...formData };
+      const bodyData = { ...formData };
 
       // Hashear contraseña si se proporciona
       if (formData.password && (showPasswordField || !user)) {

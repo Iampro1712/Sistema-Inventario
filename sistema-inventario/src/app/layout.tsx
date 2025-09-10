@@ -5,6 +5,7 @@ import "@/styles/responsive.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/auth-context";
 import { NavigationProvider } from "@/contexts/navigation-context";
+import { LanguageProvider } from "@/contexts/language-context";
 import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -47,12 +48,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>
-            <NavigationProvider>
-              {children}
-              <Toaster richColors position="top-right" />
-            </NavigationProvider>
-          </AuthProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <NavigationProvider>
+                {children}
+                <Toaster richColors position="top-right" />
+              </NavigationProvider>
+            </AuthProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

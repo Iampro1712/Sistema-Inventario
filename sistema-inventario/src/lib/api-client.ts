@@ -18,10 +18,20 @@ export function clearCurrentUser() {
 
 // Función helper para hacer requests con headers de autenticación
 export async function apiRequest(url: string, options: RequestInit = {}) {
-  const headers = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers,
   };
+  
+  // Agregar headers existentes
+  if (options.headers) {
+    if (options.headers instanceof Headers) {
+      options.headers.forEach((value, key) => {
+        headers[key] = value;
+      });
+    } else {
+      Object.assign(headers, options.headers);
+    }
+  }
 
   // Agregar header de usuario si está disponible
   if (currentUserId) {

@@ -56,7 +56,7 @@ class NotificationService {
       }
 
       return notification;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error creando notificación:', error);
       throw error;
     }
@@ -76,7 +76,7 @@ class NotificationService {
       }
 
       return notifications;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error creando notificaciones masivas:', error);
       throw error;
     }
@@ -111,7 +111,7 @@ class NotificationService {
         take: options.limit || 50,
         skip: options.offset || 0,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error obteniendo notificaciones:', error);
       throw error;
     }
@@ -130,7 +130,7 @@ class NotificationService {
           readAt: new Date(),
         },
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error marcando notificación como leída:', error);
       throw error;
     }
@@ -149,7 +149,7 @@ class NotificationService {
           readAt: new Date(),
         },
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error marcando todas las notificaciones como leídas:', error);
       throw error;
     }
@@ -164,7 +164,7 @@ class NotificationService {
           status: 'UNREAD',
         },
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error obteniendo conteo de no leídas:', error);
       return 0;
     }
@@ -185,7 +185,7 @@ class NotificationService {
       }
 
       return settings;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error obteniendo configuración de notificaciones:', error);
       throw error;
     }
@@ -202,7 +202,7 @@ class NotificationService {
           ...settings,
         },
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error actualizando configuración de notificaciones:', error);
       throw error;
     }
@@ -252,9 +252,9 @@ class NotificationService {
       }
 
       return result;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error enviando email de notificación:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
     }
   }
 
@@ -394,7 +394,7 @@ class NotificationService {
 
       console.log(`🧹 Limpieza completada: ${result.count} notificaciones eliminadas`);
       return result;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error limpiando notificaciones antiguas:', error);
       throw error;
     }

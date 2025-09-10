@@ -16,7 +16,7 @@ export async function notifyLowStock(productId: string, currentStock: number, mi
     const emailSetting = await prisma.settings.findUnique({
       where: { key: 'notifications.emailAddress' }
     });
-    const notificationEmail = emailSetting?.value;
+    const notificationEmail = emailSetting?.value as string | undefined;
 
     // Obtener usuarios que deben recibir alertas de stock (CEO, MANAGER, ADMIN)
     const users = await prisma.user.findMany({
@@ -62,9 +62,9 @@ export async function notifyStockOut(productId: string) {
     const emailSetting = await prisma.settings.findUnique({
       where: { key: 'notifications.emailAddress' }
     });
-    const notificationEmail = emailSetting?.value;
+    const notificationEmail = emailSetting?.value as string | undefined;
 
-    // Obtener usuarios que deben recibir alertas críticas (CEO, MANAGER, ADMIN)
+    // Obtener usuarios que deben recibir alertas de stock (CEO, MANAGER, ADMIN)
     const users = await prisma.user.findMany({
       where: {
         role: { in: ['CEO', 'MANAGER', 'ADMIN'] },
@@ -110,7 +110,7 @@ export async function notifyInventoryMovement(movementId: string, userId: string
     const emailSetting = await prisma.settings.findUnique({
       where: { key: 'notifications.emailAddress' }
     });
-    const notificationEmail = emailSetting?.value;
+    const notificationEmail = emailSetting?.value as string | undefined;
 
     // Obtener usuarios supervisores (CEO, MANAGER, ADMIN) excepto quien hizo el movimiento
     const users = await prisma.user.findMany({
@@ -275,7 +275,7 @@ export async function notifyNewUser(userId: string, createdByUserId: string) {
     const emailSetting = await prisma.settings.findUnique({
       where: { key: 'notifications.emailAddress' }
     });
-    const notificationEmail = emailSetting?.value;
+    const notificationEmail = emailSetting?.value as string | undefined;
 
     // Obtener usuarios ADMIN y CEO para notificación detallada
     const adminUsers = await prisma.user.findMany({

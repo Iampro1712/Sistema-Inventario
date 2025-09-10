@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
       try {
         // Parsear línea CSV (manejo básico de comillas)
-        const values = [];
+        const values: string[] = [];
         let current = '';
         let inQuotes = false;
         
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
         values.push(current.trim());
 
         // Mapear valores a campos
-        const rowData: any = {};
+        const rowData: Record<string, string> = {};
         headers.forEach((header, index) => {
           rowData[header.toLowerCase()] = values[index] || '';
         });

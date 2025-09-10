@@ -82,7 +82,7 @@ export async function testNotificationSystem(userEmail: string) {
     }
   } catch (error) {
     console.error('❌ Error en prueba del sistema:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
 
@@ -118,7 +118,7 @@ export async function getNotificationSystemInfo() {
     return {
       isInitialized: false,
       isConnected: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }

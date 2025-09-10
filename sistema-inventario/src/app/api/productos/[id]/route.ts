@@ -13,7 +13,7 @@ export async function GET(
       where: { id },
       include: {
         category: true,
-        stockMovements: {
+        movements: {
           orderBy: { createdAt: 'desc' },
           take: 10,
         },
@@ -132,7 +132,6 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    // Verificar que el producto existe
     const existingProduct = await prisma.product.findUnique({
       where: { id },
     });

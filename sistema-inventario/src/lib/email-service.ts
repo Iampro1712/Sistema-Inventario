@@ -64,6 +64,7 @@ class EmailService {
         if (emailConfig && emailConfig.smtpHost && !emailConfig.isTestMode) {
           // Usar configuración real de la base de datos
           this.transporter = nodemailer.createTransport({
+            service: 'gmail', // o el servicio que uses
             host: emailConfig.smtpHost,
             port: emailConfig.smtpPort || 587,
             secure: emailConfig.smtpSecure || false,
@@ -71,7 +72,7 @@ class EmailService {
               user: emailConfig.smtpUser,
               pass: emailConfig.smtpPass,
             },
-          });
+          } as nodemailer.TransportOptions);
         } else {
           // Como último recurso, crear cuenta de prueba
           console.log('⚠️ No se encontró configuración SMTP real, usando cuenta de prueba...');
@@ -186,7 +187,7 @@ class EmailService {
       return {
         success: true,
         messageId: info.messageId,
-        previewUrl,
+        previewUrl: previewUrl || undefined,
       };
     } catch (error) {
       console.error('Error enviando email:', error);

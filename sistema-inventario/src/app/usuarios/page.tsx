@@ -8,7 +8,7 @@ import { usePermissions } from "@/hooks/use-permissions";
 import { UserManagementRouteGuard } from "@/components/auth/route-guard";
 
 export default function UsersPage() {
-  const { currentRole } = usePermissions();
+  const { role } = usePermissions();
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     role: "",
@@ -59,7 +59,7 @@ export default function UsersPage() {
             searchTerm={searchTerm}
             filters={filters}
             onDataChange={handleDataChange}
-            currentUserRole={currentRole || "VENDEDOR"}
+            currentUserRole={role || "VENDEDOR"}
           />
         </div>
       </DashboardLayout>

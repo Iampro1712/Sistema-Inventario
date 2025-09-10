@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export async function GET() {
   try {
@@ -23,25 +25,39 @@ export async function GET() {
       _sum: { price: true }
     });
 
-    // Obtener productos con stock bajo
+    // Obtener productos con stock bajo o sin stock
     const lowStockProductsList = await prisma.product.findMany({
       where: {
         stock: {
-          lte: 5 // Stock bajo si es menor o igual a 5
+          lte: 10 // Consideramos stock bajo si es <= 10
         }
       },
       include: {
-        category: true
+        category: {
+          select: {
+            name: true,
+            color: true
+          }
+        }
       },
-      take: 5
+      orderBy: {
+        stock: 'asc'
+      },
+      take: 10
     });
 
     // Obtener movimientos recientes
     const recentMovementsList = await prisma.stockMovement.findMany({
+      where: {
+        createdAt: {
+          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        }
+      },
       include: {
         product: {
-          include: {
-            category: true
+          select: {
+            name: true,
+            sku: true
           }
         }
       },
@@ -68,18 +84,31 @@ export async function GET() {
       totalUsers,
       lowStockProducts: lowStockProductsList.length,
       outOfStockProducts,
-      recentMovements,
       totalInventoryValue: totalInventoryValue._sum.price || 0,
       lowStockProductsList,
-      recentMovementsList: recentMovementsList.map((m: any) => ({
-        ...m,
-        user: { name: 'Sistema' } // Por ahora usuario fijo
+      recentMovementsList: recentMovementsList.map(movement => ({
+        id: movement.id,
+        type: movement.type,
+        quantity: movement.quantity,
+        reason: movement.reason || 'Sin especificar',
+        createdAt: movement.createdAt.toISOString(),
+        product: {
+          name: movement.product.name,
+          sku: movement.product.sku
+        },
+        user: {
+          name: 'Sistema'
+        }
       })),
-      categoryDistribution
+      categoryDistribution: categoryDistribution.map(category => ({
+        name: category.name,
+        count: category._count.products,
+        color: category.color || '#6366f1'
+      }))
     };
 
     return NextResponse.json(stats);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error al obtener estadísticas:', error);
     return NextResponse.json(
       { error: 'Error al obtener estadísticas' },
